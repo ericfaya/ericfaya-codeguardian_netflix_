@@ -1,0 +1,50 @@
+server:
+  servlet:
+    context-path: /netflix/v1
+  port: 8080
+
+spring:
+  application:
+    name: netflix-guillem
+
+  datasource:
+    url: jdbc:postgresql://localhost:8080/postgres
+    username: root
+    password: Gg08112024
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+    properties.hibernate.show_sql: false
+    open-in-view: false
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health
+
+netflix-guillem:
+  resource:
+    version: /v1
+    endpoint1: { }
+    endpoint2: { }
+
+  error:
+    codes:
+      400: "Generic Bad Request Error"
+      400-01: "First Custom Bad Request Error"
+      404: "Generic Not Found Error"
+      404-01: "First Custom Not Found Error"
+      404-02: "First Custom Not Found Error"
+      500: "Generic Internal Error"
+
+
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
