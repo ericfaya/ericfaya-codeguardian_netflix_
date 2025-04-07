@@ -29,6 +29,6 @@ build/
 .vscode/
 target/*.jar
 
-netflix-guillem-0.1-SNAPSHOT.jar
+codeguardian-0.0.1-SNAPSHOT.jar
 
 .github/workflows/azure_pipelines.yml
