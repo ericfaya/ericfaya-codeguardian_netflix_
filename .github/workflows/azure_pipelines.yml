@@ -1,0 +1,61 @@
+name: Process Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  process-pull-request:
+    runs-on: ubuntu-latest
+
+    env:
+      GROQAPIKEY: ${{ secrets.GROQAPIKEY }}
+      GROQMODEL: ${{ secrets.GROQMODEL }}
+      GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Necesario para el git diff con ramas
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get Pull Request Info
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "BASE_BRANCH=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+          echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+
+      - name: Check JAR existence
+        run: ls -l codeguardian-0.0.1-SNAPSHOT.jar
+
+      - name: Run JAR with Pull Request Information
+        run: |
+          java -jar codeguardian-0.0.1-SNAPSHOT.jar  \
+            ${{ env.GROQAPIKEY }} \
+            ${{ env.GROQMODEL }} \
+            ${{ env.GITHUB_TOKEN }} \
+            codeguardian_netflix \
+            ${{ env.PR_NUMBER }}
+
+      - name: Verificar ejecución del JAR
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "✅ JAR ejecutado exitosamente"
+            exit 0
+          else
+            echo "❌ Error en la ejecución del JAR"
+            exit 1
+          fi
