@@ -32,23 +32,24 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
-      - name: Build JAR with maven
-        run: mvn clean package -DskipTests
-
       - name: Get Pull Request Info
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           echo "BASE_BRANCH=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
           echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
-
+      
+      - name: Check JAR existence
+        run:  ls -l codeguardian-0.0.1-SNAPSHOT.jar
+        
       - name: Run JAR with Pull Request Information
         run: |
-          java -jar target/codeguardian-0.0.1-SNAPSHOT.jar  \
+          java -jar codeguardian-0.0.1-SNAPSHOT.jar  \
             ${{ env.GROQAPIKEY }} \
             ${{ env.GROQMODEL }} \
             ${{ env.GITHUB_TOKEN }} \
-            codeguardian_netflix \
+            codeguardian_netflix_ \
             ${{ env.PR_NUMBER }}
+            
 
       - name: Verificar ejecución del JAR
         run: |
