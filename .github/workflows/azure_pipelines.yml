@@ -38,9 +38,6 @@ jobs:
           echo "BASE_BRANCH=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
           echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
 
-      - name: Check JAR existence
-        run: ls -l codeguardian-0.0.1-SNAPSHOT.jar
-
       - name: Run JAR with Pull Request Information
         run: |
           java -jar codeguardian-0.0.1-SNAPSHOT.jar  \
