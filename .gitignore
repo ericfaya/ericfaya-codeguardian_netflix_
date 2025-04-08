@@ -29,7 +29,6 @@ build/
 .vscode/
 target/*.jar
 
-
 codeguardian-0.0.1-SNAPSHOT.jar
 
 .github/workflows/azure_pipelines.yml
