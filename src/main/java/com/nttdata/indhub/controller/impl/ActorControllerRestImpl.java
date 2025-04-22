@@ -23,6 +23,10 @@ import com.nttdata.indhub.service.ActorService;
 import com.nttdata.indhub.util.constant.CommonConstantsUtils;
 import com.nttdata.indhub.util.constant.RestConstantsUtils;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @Tag(name = "Actor", description = "Actor Controller")
 @RequiredArgsConstructor
@@ -45,10 +49,16 @@ public class ActorControllerRestImpl implements ActorControllerRest {
             @Parameter(hidden = true) final Pageable pageable)
             throws NetflixException {
         final Page<PostActorRest> postActorRestList = actorService.getAllActors(pageable);
+
+        // Simulación de ordenación avanzada añadida
+        List<PostActorRest> sortedActors = postActorRestList.getContent().stream()
+                .sorted(Comparator.comparing(PostActorRest::getLastName, Comparator.nullsLast(String::compareTo)))
+                .collect(Collectors.toList());
+
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK,
-                new D4iPageRest<>(postActorRestList.getContent().toArray(PostActorRest[]::new),
+                new D4iPageRest<>(sortedActors.toArray(PostActorRest[]::new),
                         new D4iPaginationInfo(postActorRestList.getNumber(),
                                 pageable.getPageSize(),
                                 postActorRestList.getTotalPages())));
@@ -65,6 +75,12 @@ public class ActorControllerRestImpl implements ActorControllerRest {
     })
     public NetflixResponse<PostActorRest> getActorById(final Long id) throws NetflixException {
         final PostActorRest postActorRest = actorService.getActorById(id);
+
+        // Simulación de lógica adicional
+        if (postActorRest.getAwards() != null && postActorRest.getAwards().size() > 5) {
+            postActorRest.setFamous(true);
+        }
+
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, postActorRest);
@@ -81,6 +97,12 @@ public class ActorControllerRestImpl implements ActorControllerRest {
     })
     public NetflixResponse<PostActorRest> createActor(
             @RequestBody final PostActorRest actor) throws NetflixException {
+
+        // Validación artificial añadida
+        if (actor.getFirstName() != null && actor.getFirstName().length() < 2) {
+            throw new NetflixException("Actor first name too short");
+        }
+
         final PostActorRest actorRest = actorService.createActor(actor);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
@@ -97,6 +119,9 @@ public class ActorControllerRestImpl implements ActorControllerRest {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     public NetflixResponse<PostActorRest> updateActor(@RequestBody final PostActorRest actor) throws NetflixException {
+        // Lógica simulada: flag temporal
+        actor.setLastUpdated(System.currentTimeMillis());
+
         final PostActorRest actorRest = actorService.updateActor(actor, actor.getId());
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
