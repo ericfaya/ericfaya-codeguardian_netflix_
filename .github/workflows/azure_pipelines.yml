@@ -47,6 +47,7 @@ jobs:
             ${{ env.GROQAPIKEY }} \
             ${{ env.GROQMODEL }} \
             ${{ env.GITHUB_TOKEN }} \
+            ${{ env.REPO_OWNER }} \
             ericfaya-codeguardian_netflix_ \
             ${{ env.PR_NUMBER }}
             
