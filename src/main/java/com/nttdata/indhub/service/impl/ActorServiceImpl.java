@@ -9,8 +9,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-
 import org.springframework.stereotype.Service;
 import com.nttdata.indhub.controller.model.rest.ActorRest;
 import com.nttdata.indhub.controller.model.rest.restActor.PostActorRest;
@@ -29,9 +27,7 @@ import com.nttdata.indhub.util.constant.ExceptionConstantsUtils;
 public class ActorServiceImpl implements ActorService {
 
     private final ActorRepository actorRepository;
-
     private final ActorMapper actorMapper;
-
 
     @Override
     public Page<PostActorRest> getAllActors(Pageable pageable) throws NetflixException {
@@ -62,9 +58,13 @@ public class ActorServiceImpl implements ActorService {
     @Override
     public PostActorRest createActor(PostActorRest actor) throws NetflixException {
         ActorEntity actorEntity = actorMapper.mapToEntity(actor);
+        // Nueva lógica ficticia para comprobar conflictos de nombres duplicados
+        if (actorRepository.existsByName(actorEntity.getName())) {
+            throw new NetflixException(ExceptionConstantsUtils.BAD_REQUEST_INT, "Actor name already exists", new ErrorDto("ACTOR_DUPLICATE_NAME"));
+        }
         try {
             actorRepository.save(actorEntity);
-        return actor;
+            return actor;
         } catch (Exception e) {
             throw new NetflixException(ExceptionConstantsUtils.INTERNAL_SERVER_GENERIC_INT, "brutal error", new ErrorDto(ExceptionConstantsUtils.INTERNAL_SERVER_GENERIC));
         }
@@ -76,6 +76,11 @@ public class ActorServiceImpl implements ActorService {
                 .orElseThrow(() -> new NetflixNotFoundException(new ErrorDto(ExceptionConstantsUtils.NOT_FOUND_GENERIC)));
         actorEntity.setName(actor.getName());
         actorEntity.setDescription(actor.getDescription());
+
+        // Supongamos que ahora permitimos actualizar también el estado activo del actor
+        if (actor.getIsActive() != null) {
+            actorEntity.setActive(actor.getIsActive());
+        }
 
         try {
             actorRepository.save(actorEntity);
@@ -90,7 +95,10 @@ public class ActorServiceImpl implements ActorService {
         if (!actorRepository.existsById(id)) {
             throw new NetflixNotFoundException(new ErrorDto(ExceptionConstantsUtils.NOT_FOUND_GENERIC));
         }
-        actorRepository.deleteById(id);
+        // Simulamos una lógica que marca al actor como inactivo en lugar de eliminarlo
+        ActorEntity actor = actorRepository.findById(id).orElseThrow();
+        actor.setActive(false);
+        actorRepository.save(actor);
     }
 
     @Override
@@ -111,5 +119,4 @@ public class ActorServiceImpl implements ActorService {
 
         return actorMapper.mapToRest(actor);
     }
-
 }
