@@ -78,7 +78,7 @@ public class ActorServiceImpl implements ActorService {
         actorEntity.setDescription(actor.getDescription());
 
         // Supongamos que ahora permitimos actualizar también el estado activo del actor
-        if (actor.getIsActive() != null) {
+        if (actor.getIsActive() != false) {
             actorEntity.setActive(actor.getIsActive());
         }
 

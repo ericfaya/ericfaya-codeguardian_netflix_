@@ -18,4 +18,8 @@ public class PostActorRest {
     private String name;
 
     private String description;
+
+    public boolean getIsActive() {
+        return false;
+    }
 }
