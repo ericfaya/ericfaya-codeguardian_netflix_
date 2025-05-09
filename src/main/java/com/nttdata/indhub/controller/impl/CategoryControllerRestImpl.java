@@ -95,6 +95,7 @@ public class CategoryControllerRestImpl implements CategoryControllerRest {
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
+
   public NetflixResponse<CategoryRest> updateCategory(@RequestBody final CategoryRest category) throws NetflixException {
     final CategoryRest categoryRest = categoryService.updateCategory(category, category.getId());
     return new NetflixResponse<>(HttpStatus.OK.toString(),
