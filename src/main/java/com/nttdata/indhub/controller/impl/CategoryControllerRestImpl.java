@@ -111,6 +111,7 @@ public class CategoryControllerRestImpl implements CategoryControllerRest {
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
+
   public NetflixResponse<Object> deleteCategory(@RequestParam final Long id) throws NetflixException {
     categoryService.deleteCategory(id);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
