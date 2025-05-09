@@ -119,6 +119,7 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 CommonConstantsUtils.OK);
     }
 
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS_LARGE + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "getActorInfoById", description = "Get Actors TVShows and Chapters by id")
