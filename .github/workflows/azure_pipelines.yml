@@ -32,6 +32,12 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
+      - name: Get PR SHAs
+        run: |
+          echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+
+
       - name: Get Pull Request Info
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
@@ -49,7 +55,9 @@ jobs:
             ${{ env.GITHUB_TOKEN }} \
             ${{ env.REPO_OWNER }} \
             ericfaya-codeguardian_netflix_ \
-            ${{ env.PR_NUMBER }}
+            ${{ env.PR_NUMBER }} \
+            ${{ env.PR_SHA }} \
+            ${{ env.PR_SHA_BASE }}
             
 
       - name: Verificar ejecución del JAR
