@@ -18,10 +18,10 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout code with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2  # Necesario para el git diff con ramas
+          fetch-depth: 0  # Trae todo el historial del repo
 
       - name: Set up JDK
         uses: actions/setup-java@v3
