@@ -40,7 +40,7 @@ jobs:
       - name: Get modified files in latest commit
         id: get_changed_files
         run: |
-          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files.txt
+          git diff --name-only HEAD^ HEAD > changed_files.txt
           echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
           cat changed_files.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
