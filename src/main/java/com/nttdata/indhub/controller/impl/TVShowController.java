@@ -24,34 +24,44 @@ import com.nttdata.indhub.util.constant.CommonConstantsUtils;
 import com.nttdata.indhub.util.constant.RestConstantsUtils;
 
 @RestController
-@Tag(name = "TVShow", description = "TVShow Controller")
-@RequiredArgsConstructor
-public class TVShowControllerRestImpl implements TVShowControllerRest {
 
-  private final TVShowService tvShowService;
+@Tag(name = "TVShow", description = "TVShow Controller")
+
+@RequiredArgsConstructor
+
+public class TVShowController implements TVShowControllerRest {
+
+  private final TVShowService service;
 
   @Override
+
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS, produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "getAllTVShows", description = "Get all TVShow paginated")
+
+  @GetMapping(value = "/tvshows", produces = "application/json")  @Operation(summary = "getAllTVShows", description = "Get all TVShow paginated")
+
   @ApiResponses(value = {
+          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
           @ApiResponse(responseCode = "200"),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+
   })
-  public NetflixResponse<D4iPageRest<PostTVShowRest>> getAllTVShows(
-          @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
-          @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
+  public NetflixResponse<D4iPageRest<PostTVShowRest>> fetchAllTVShows(
+          @RequestParam(defaultValue = "20") final int size,
+          @RequestParam(defaultValue = "0") final int page,
+
           @Parameter(hidden = true) final Pageable pageable)
           throws NetflixException {
-    final Page<PostTVShowRest> postTVShowRestList = tvShowService.getAllTVShows(pageable);
+
+    final Page<PostTVShowRest> tvShows = service.getAllTVShows(pageable);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
             String.valueOf(HttpStatus.OK.value()),
-            CommonConstantsUtils.OK,
-            new D4iPageRest<>(postTVShowRestList.getContent().toArray(PostTVShowRest[]::new),
-                    new D4iPaginationInfo(postTVShowRestList.getNumber(),
+            "OK",
+
+            new D4iPageRest<>(tvShows.getContent().toArray(PostTVShowRest[]::new),
+
+                    new D4iPaginationInfo(tvShows.getNumber(),
                             pageable.getPageSize(),
-                            postTVShowRestList.getTotalPages())));
+                            tvShows.getTotalPages())));
   }
 
   @Override
@@ -64,7 +74,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<PostTVShowRest> getTVShowById(final Long id) throws NetflixException {
-    final PostTVShowRest postTVShowRest = tvShowService.getTVShowById(id);
+    final PostTVShowRest postTVShowRest = service.getTVShowById(id);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, postTVShowRest);
@@ -81,7 +91,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
   })
   public NetflixResponse<PostTVShowRest> createTVShow(
       @RequestBody final PostTVShowRest tvShow) throws NetflixException {
-    final PostTVShowRest tvShowRest = tvShowService.createTVShow(tvShow);
+    final PostTVShowRest tvShowRest = service.createTVShow(tvShow);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
@@ -97,7 +107,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<PostTVShowRest> updateTVShow(@RequestBody final PostTVShowRest tvShow) throws NetflixException {
-    final PostTVShowRest tvShowRest = tvShowService.updateTVShow(tvShow, tvShow.getId());
+    final PostTVShowRest tvShowRest = service.updateTVShow(tvShow, tvShow.getId());
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
@@ -113,7 +123,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<Object> deleteTVShow(@RequestParam final Long id) throws NetflixException {
-    tvShowService.deleteTVShow(id);
+    service.deleteTVShow(id);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK);
@@ -131,7 +141,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<TVShowRest> addSeasonToTVShow(@RequestParam final Long seasonId, @RequestParam final Long tvShowId) throws NetflixException {
-    final TVShowRest tvShowRest = tvShowService.addSeasonToTVShow(seasonId, tvShowId);
+    final TVShowRest tvShowRest = service.addSeasonToTVShow(seasonId, tvShowId);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
@@ -149,7 +159,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<TVShowRest> deleteSeasonOfTVShow(@RequestParam final Long seasonId, @RequestParam final Long tvShowId) throws NetflixException {
-    final TVShowRest tvShowRest = tvShowService.deleteSeasonOfTVShow(seasonId, tvShowId);
+    final TVShowRest tvShowRest = service.deleteSeasonOfTVShow(seasonId, tvShowId);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
@@ -167,7 +177,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<TVShowRest> addCategoryToTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
-    final TVShowRest tvShowRest = tvShowService.addCategoryToTVShow(categoryId, tvShowId);
+    final TVShowRest tvShowRest = service.addCategoryToTVShow(categoryId, tvShowId);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
@@ -185,7 +195,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
   public NetflixResponse<TVShowRest> deleteCategoryOfTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
-    final TVShowRest tvShowRest = tvShowService.deleteCategoryOfTVShow(categoryId, tvShowId);
+    final TVShowRest tvShowRest = service.deleteCategoryOfTVShow(categoryId, tvShowId);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
