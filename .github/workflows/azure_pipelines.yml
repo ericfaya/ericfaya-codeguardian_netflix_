@@ -37,6 +37,13 @@ jobs:
           echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
 
+      - name: Get modified files in latest commit
+        id: get_changed_files
+        run: |
+          git diff-tree --no-commit-id --name-only -r ${{ github.event.pull_request.head.sha }} > changed_files.txt
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+          cat changed_files.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Get Pull Request Info
         run: |
@@ -56,9 +63,8 @@ jobs:
             ${{ env.REPO_OWNER }} \
             ericfaya-codeguardian_netflix_ \
             ${{ env.PR_NUMBER }} \
-            ${{ env.PR_SHA }} \
-            ${{ env.PR_SHA_BASE }}
-            
+            changed_files.txt
+                  
 
       - name: Verificar ejecución del JAR
         run: |
