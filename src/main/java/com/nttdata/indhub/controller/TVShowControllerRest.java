@@ -9,7 +9,7 @@ import com.nttdata.indhub.exception.NetflixException;
 
 public interface TVShowControllerRest {
 
-  NetflixResponse<D4iPageRest<PostTVShowRest>> getAllTVShows(int page, int size, Pageable pageable) throws NetflixException;
+  NetflixResponse<D4iPageRest<PostTVShowRest>> fetchAllTVShows(int page, int size, Pageable pageable) throws NetflixException;
 
   NetflixResponse<PostTVShowRest> getTVShowById(Long id) throws NetflixException;
 
