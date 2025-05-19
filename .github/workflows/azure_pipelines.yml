@@ -1,15 +1,4 @@
-name: Process Pull Request
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: read
-  pull-requests: write
-
-jobs:
-  process-pull-request:
+process-pull-request:
     runs-on: ubuntu-latest
 
     env:
@@ -21,7 +10,7 @@ jobs:
       - name: Checkout code with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Trae todo el historial del repo
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -37,27 +26,24 @@ jobs:
           echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
 
-      - name: Get modified files in latest commit
+      - name: Get files changed in latest commit of PR
         id: get_changed_files
         run: |
-          git diff --name-only HEAD^ HEAD > changed_files.txt
-          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
-          cat changed_files.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Mostrar archivos actuales
-        run: ls -l    
+          # Usamos el último commit de la PR directamente
+          git diff --name-only ${{ env.PR_SHA }}^ ${{ env.PR_SHA }} > changed_files.txt
+          
+          echo "🔍 Archivos cambiados en el último commit:"
+          cat changed_files.txt
 
       - name: Get Pull Request Info
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "BASE_BRANCH=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
           echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
-      
-      - name: Check JAR existence
-        run:  ls -l codeguardian-0.0.1-SNAPSHOT.jar
-        
-      - name: Run JAR with Pull Request Information
+
+      - name: List files for debugging
+        run: ls -lah
+
+      - name: Run CodeGuardian JAR
         run: |
           java -jar codeguardian-0.0.1-SNAPSHOT.jar  \
             ${{ env.GROQAPIKEY }} \
@@ -67,7 +53,6 @@ jobs:
             ericfaya-codeguardian_netflix_ \
             ${{ env.PR_NUMBER }} \
             changed_files.txt
-                  
 
       - name: Verificar ejecución del JAR
         run: |
