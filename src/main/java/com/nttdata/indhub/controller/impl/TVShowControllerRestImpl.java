@@ -22,36 +22,48 @@ import com.nttdata.indhub.exception.NetflixException;
 import com.nttdata.indhub.service.TVShowService;
 import com.nttdata.indhub.util.constant.CommonConstantsUtils;
 import com.nttdata.indhub.util.constant.RestConstantsUtils;
-@RestController
-@Tag(name = "TVShow", description = "TVShow Controller")
-@RequiredArgsConstructor
-public class TVShowControllerRestImpl implements TVShowControllerRest {
 
-  private final TVShowService tvShowService;
+@RestController
+
+@Tag(name = "TVShow", description = "TVShow Controller")
+
+@RequiredArgsConstructor
+
+public class TVShowController implements TVShowControllerRest {
+
+  private final TVShowService service;
 
   @Override
+
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS, produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "getAllTVShows", description = "Get all TVShow paginated")
+
+  @GetMapping(value = "/tvshows", produces = "application/json")  @Operation(summary = "getAllTVShows", description = "Get all TVShow paginated")
+
   @ApiResponses(value = {
+          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
           @ApiResponse(responseCode = "200"),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+
   })
-  public NetflixResponse<D4iPageRest<PostTVShowRest>> getAllTVShows(
-          @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
-          @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
+  public NetflixResponse<D4iPageRest<PostTVShowRest>> fetchAllTVShows(
+          @RequestParam(defaultValue = "20") final int size,
+          @RequestParam(defaultValue = "0") final int page,
+
           @Parameter(hidden = true) final Pageable pageable)
           throws NetflixException {
-    final Page<PostTVShowRest> postTVShowRestList = tvShowService.getAllTVShows(pageable);
+
+    final Page<PostTVShowRest> tvShows = service.getAllTVShows(pageable);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
             String.valueOf(HttpStatus.OK.value()),
-            CommonConstantsUtils.OK,
-            new D4iPageRest<>(postTVShowRestList.getContent().toArray(PostTVShowRest[]::new),
-                    new D4iPaginationInfo(postTVShowRestList.getNumber(),
+            "OK",
+
+            new D4iPageRest<>(tvShows.getContent().toArray(PostTVShowRest[]::new),
+
+                    new D4iPaginationInfo(tvShows.getNumber(),
                             pageable.getPageSize(),
-                            postTVShowRestList.getTotalPages())));
+                            tvShows.getTotalPages())));
   }
+
 
 
 
