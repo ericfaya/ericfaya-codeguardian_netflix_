@@ -37,7 +37,9 @@ public class SeasonControllerRestImpl implements SeasonControllerRest {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+
     })
     public NetflixResponse<D4iPageRest<PostSeasonRest>> getAllSeasons(
             @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
@@ -46,8 +48,11 @@ public class SeasonControllerRestImpl implements SeasonControllerRest {
             throws NetflixException {
         final Page<PostSeasonRest> postSeasonRestList = seasonService.getAllSeasons(pageable);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
+
                 String.valueOf(HttpStatus.OK.value()),
+
                 CommonConstantsUtils.OK,
+
                 new D4iPageRest<>(postSeasonRestList.getContent().toArray(PostSeasonRest[]::new),
                         new D4iPaginationInfo(postSeasonRestList.getNumber(),
                                 pageable.getPageSize(),
