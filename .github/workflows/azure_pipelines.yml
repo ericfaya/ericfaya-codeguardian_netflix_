@@ -45,6 +45,9 @@ jobs:
           cat changed_files.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Mostrar archivos actuales
+        run: ls -l    
+
       - name: Get Pull Request Info
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
