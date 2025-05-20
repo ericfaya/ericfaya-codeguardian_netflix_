@@ -76,3 +76,16 @@ jobs:
             echo "❌ Error en la ejecución del JAR"
             exit 1
           fi
+          
+      - name: Notificar en Teams (comentarios PR)
+        if: success()  # solo si el análisis fue exitoso
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}\n\n*${PR_TITLE}*\nAutor: ${PR_AUTHOR}\n🔗 [Ver Pull Request](${PR_URL})"
+
+          curl -H 'Content-Type: application/json' \
+             -d "{\"text\": \"$MESSAGE\"}" \
+             "${{ secrets.TEAMS_WEBHOOK_URL }}"
