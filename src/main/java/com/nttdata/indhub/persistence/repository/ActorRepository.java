@@ -9,4 +9,5 @@ import com.nttdata.indhub.persistence.entity.ActorEntity;
 public interface ActorRepository extends PagingAndSortingRepository<ActorEntity, Long>, CrudRepository<ActorEntity, Long> {
 
 
+    boolean existsByName(String name);
 }
