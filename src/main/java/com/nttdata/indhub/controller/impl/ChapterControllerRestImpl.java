@@ -28,7 +28,7 @@ import com.nttdata.indhub.util.constant.RestConstantsUtils;
 @RequiredArgsConstructor
 public class ChapterControllerRestImpl implements ChapterControllerRest {
 
-    private final ChapterService service;
+    private final ChapterService chapterService;
 
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -44,7 +44,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
             @Parameter(hidden = true) final Pageable pageable)
             throws NetflixException {
-        final Page<PostChapterRest> postChapterRestList = service.getAllChapters(pageable);
+        final Page<PostChapterRest> postChapterRestList = chapterService.getAllChapters(pageable);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK,
@@ -64,7 +64,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     public NetflixResponse<PostChapterRest> getChapterById(final Long id) throws NetflixException {
-        final PostChapterRest postChapterRest = service.getChapterById(id);
+        final PostChapterRest postChapterRest = chapterService.getChapterById(id);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, postChapterRest);
@@ -81,7 +81,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
     })
     public NetflixResponse<PostChapterRest> createChapter(
             @RequestBody final PostChapterRest chapter) throws NetflixException {
-        final PostChapterRest chapterRest = service.createChapter(chapter);
+        final PostChapterRest chapterRest = chapterService.createChapter(chapter);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, chapterRest);
@@ -97,7 +97,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     public NetflixResponse<PostChapterRest> updateChapter(@RequestBody final PostChapterRest chapter) throws NetflixException {
-        final PostChapterRest chapterRest = service.updateChapter(chapter, chapter.getId());
+        final PostChapterRest chapterRest = chapterService.updateChapter(chapter, chapter.getId());
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, chapterRest);
@@ -113,7 +113,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     public NetflixResponse<Object> deleteChapter(@RequestParam final Long id) throws NetflixException {
-        service.deleteChapter(id);
+        chapterService.deleteChapter(id);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK);
@@ -131,7 +131,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     public NetflixResponse<ChapterRest> addActorToChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
-        final ChapterRest chapterRest = service.addActorToChapter(actorId, chapterId);
+        final ChapterRest chapterRest = chapterService.addActorToChapter(actorId, chapterId);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, chapterRest);
@@ -149,7 +149,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     public NetflixResponse<ChapterRest> deleteActorOfChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
-        final ChapterRest chapterRest = service.deleteActorOfChapter(actorId, chapterId);
+        final ChapterRest chapterRest = chapterService.deleteActorOfChapter(actorId, chapterId);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, chapterRest);

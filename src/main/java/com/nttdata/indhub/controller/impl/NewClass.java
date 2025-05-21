@@ -1,11 +1,11 @@
 package com.nttdata.indhub.controller.impl;
 
-public class Hola2 {
+public class NewClass {
     private static final int id = 0;
     private static String brand;
     private static String model;
 
-    public Hola2(){
+    public NewClass(){
 
     }
 
@@ -13,15 +13,15 @@ public class Hola2 {
         return brand;
     }
 
-    public static void setBrand(String brand) {
-        Hola2.brand = brand;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public static String getModel() {
         return model;
     }
 
-    public static void setModel(String model) {
-        Hola2.model = model;
+    public void setModel(String model) {
+        this.model = model;
     }
 }
