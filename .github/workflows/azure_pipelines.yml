@@ -89,7 +89,7 @@ jobs:
             DIFF=$(git fetch origin ${{ github.event.pull_request.base.ref }} > /dev/null 2>&1 && git diff origin/${{ github.event.pull_request.base.ref }}...HEAD)
             SUMMARY=$(
                 curl -s https://api.groq.com/openai/v1/chat/completions \
-                  -H "Authorization: Bearer $env.GROQAPIKEYSUMMARY" \
+                  -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
                   -H "Content-Type: application/json" \
                   -d '{
                     "model": "mixtral-8x7b-32768",
