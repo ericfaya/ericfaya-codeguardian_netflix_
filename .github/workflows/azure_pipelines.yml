@@ -80,12 +80,41 @@ jobs:
       - name: Notificar en Teams (comentarios PR)
         if: success()  # solo si el análisis fue exitoso
         run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
-          PR_URL="${{ github.event.pull_request.html_url }}"
-          MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}\n\n*${PR_TITLE}*\nAutor: ${PR_AUTHOR}\n🔗 [Ver Pull Request](${PR_URL})"
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+            PR_URL="${{ github.event.pull_request.html_url }}"
+            COMMIT_SHA=$(git rev-parse --short HEAD)
+            COMMIT_MSG=$(git log -1 --pretty=%s)
+            SUMMARY=$(
+                curl -s https://api.groq.com/openai/v1/chat/completions \
+                  -H "Authorization: Bearer $env.GROQAPIKEYSUMMARY" \
+                  -H "Content-Type: application/json" \
+                  -d '{
+                    "model": "mixtral-8x7b-32768",
+                    "messages": [
+                      {
+                        "role": "system",
+                        "content": "Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional."
+                      },
+                      {
+                        "role": "user",
+                        "content": "Resume esta PR para incluirlo como comentario automático:\n\n'"$(git diff --cached)"'"
+                      }
+                    ],
+                    "temperature": 0.5
+                  }' | jq -r '.choices[0].message.content')
+            
+            SUMMARY_ESCAPED=$(echo "$SUMMARY" | sed ':a;N;$!ba;s/\n/\\n/g')
 
-          curl -H 'Content-Type: application/json' \
-             -d "{\"text\": \"$MESSAGE\"}" \
-             "${{ secrets.TEAMS_WEBHOOK_URL }}"
+            MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}\\n"
+            MESSAGE+="🔀 ${PR_TITLE}\\n"
+            MESSAGE+="👤 Autor: ${PR_AUTHOR}\\n"
+            MESSAGE+="🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}\\n"
+            MESSAGE+="🔗 [Ver Pull Request](${PR_URL})\\n"
+            MESSAGE+="💡 Resumen: ${SUMMARY_ESCAPED}"
+        
+            curl -H 'Content-Type: application/json' \
+                 -d "{\"text\": \"$MESSAGE\"}" \
+                 "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          
