@@ -61,14 +61,23 @@ jobs:
             ${{ env.PR_NUMBER }} \
             changed_files.txt
 
-      - name: Generar resumen técnico con Groq y comentar en la PR
+      - name: Generar resumen técnico con Groq y comentar en la PR + Teams
         run: |
+          # ➤ Preparar inputs del prompt
           COMMITS=$(git log origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --pretty=format:"- %s" | head -n 50)
           FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} | head -n 20)
-          DIFFS=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | grep '^+[^+]' | head -n 50)
-
+          DIFFS=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | grep '^+[^+]' 2>/dev/null | head -n 50)
+      
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          COMMIT_MSG=$(git log --no-merges -1 --pretty=%s)
+          COMMIT_SHA=$(git log --no-merges -1 --pretty=%h)
+      
+          # ➤ Crear prompt técnico
           PROMPT="Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional.
-          
+      
           Resume esta Pull Request con base en la siguiente información:
           
           📝 Commits recientes:
@@ -79,9 +88,10 @@ jobs:
           
           🔍 Fragmentos de código añadido:
           $DIFFS
-          
+      
           Escribe un resumen técnico en una sola frase que abarque los principales cambios. Evita frases genéricas y no incluyas explicaciones del estilo 'Este resumen puede ser usado...'."
-
+      
+          # ➤ Crear cuerpo JSON para Groq
           jq -n \
             --arg prompt "$PROMPT" \
             '{
@@ -89,19 +99,34 @@ jobs:
               messages: [{ role: "user", content: $prompt }],
               temperature: 0.3
             }' > summary_body.json
-
+      
+          # ➤ Llamada a Groq
           curl -s https://api.groq.com/openai/v1/chat/completions \
             -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
             -H "Content-Type: application/json" \
             -d @summary_body.json > groq_summary_output.json
-
+      
           SUMMARY=$(jq -r '.choices[0].message.content' groq_summary_output.json)
-
+      
           if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
             SUMMARY="(No se pudo generar el resumen)"
           fi
-
+      
+          # ➤ Comentario en la PR
           COMMENT="📝 *Resumen técnico generado por CodeGuardian*\n\n$SUMMARY"
-
-          gh pr comment ${{ github.event.pull_request.number }} \
-            --body "$COMMENT"
+          gh pr comment $PR_NUMBER --body "$COMMENT"
+      
+          # ➤ Notificación en Teams
+          FINAL_MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
+          🔀 ${PR_TITLE}
+          👤 Autor: ${PR_AUTHOR}
+          🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
+          🔗 Ver Pull Request: ${PR_URL}
+          💡 Resumen:
+          ${SUMMARY}"
+          
+          ESCAPED_MESSAGE=$(printf '%s' "$FINAL_MESSAGE" | jq -Rs .)
+      
+          curl -H "Content-Type: application/json" \
+               -d "{\"text\": ${ESCAPED_MESSAGE}}" \
+               "${{ secrets.TEAMS_WEBHOOK_URL }}"
