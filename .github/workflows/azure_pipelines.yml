@@ -92,7 +92,7 @@ jobs:
                   -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
                   -H "Content-Type: application/json" \
                   -d '{
-                    "model": "mixtral-8x7b-32768",
+                    "model": "compound-beta",
                     "messages": [
                       {
                         "role": "system",
