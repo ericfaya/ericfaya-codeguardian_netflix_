@@ -78,7 +78,7 @@ jobs:
           fi
           
       - name: Notificar en Teams (comentarios PR)
-        if: success()  # solo si el análisis fue exitoso
+        if: success()
         run: |
             PR_NUMBER=${{ github.event.pull_request.number }}
             PR_TITLE="${{ github.event.pull_request.title }}"
@@ -88,38 +88,44 @@ jobs:
             COMMIT_SHA=$(git log --no-merges -1 --pretty=%h)
             git fetch origin ${{ github.event.pull_request.base.ref }}
             DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | head -c 4000)
+
             echo "📄 Diff generado para el resumen:"
             echo "$DIFF"
-            #DIFF=$(git fetch origin ${{ github.event.pull_request.base.ref }} > /dev/null 2>&1 && git diff origin/${{ github.event.pull_request.base.ref }}...HEAD)
-            SUMMARY=$(
-                curl -s https://api.groq.com/openai/v1/chat/completions \
-                  -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
-                  -H "Content-Type: application/json" \
-                  -d '{
-                    "model": "compound-beta",
-                    "messages": [
-                      {
-                        "role": "system",
-                        "content": "Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional."
-                      },
-                      {
-                        "role": "user",
-                        "content": "Resume esta PR para incluirlo como comentario automático:\n\n'"${DIFF}"'"
-                      }
-                    ],
-                    "temperature": 0.5
-                  }' | jq -r '.choices[0].message.content')
-            
-            SUMMARY_ESCAPED=$(echo "$SUMMARY" | sed ':a;N;$!ba;s/\n/\\n/g')
 
-            MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
-            🔀 ${PR_TITLE}
-            👤 Autor: ${PR_AUTHOR}
-            🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
-            🔗 [Ver Pull Request](${PR_URL})
-            💡 Resumen: ${SUMMARY_ESCAPED}"
-        
-            curl -H 'Content-Type: application/json' \
-                 -d "{\"text\": \"$MESSAGE\"}" \
+            SUMMARY=$(
+              curl -s https://api.groq.com/openai/v1/chat/completions \
+                -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "model": "compound-beta",
+                  "messages": [
+                    {
+                      "role": "system",
+                      "content": "Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional."
+                    },
+                    {
+                      "role": "user",
+                      "content": "Resume esta PR para incluirlo como comentario automático:\n\n'"${DIFF}"'"
+                    }
+                  ],
+                  "temperature": 0.5
+                }' | jq -r '.choices[0].message.content'
+            )
+
+            # Escapamos adecuadamente para JSON (sólo \\ y \n)
+            SUMMARY_ESCAPED=$(printf "%s" "$SUMMARY" | jq -Rs .)
+
+            # Creamos mensaje base con saltos manuales y sin indentación
+            RAW_MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}\n"
+            RAW_MESSAGE+="🔀 ${PR_TITLE}\n"
+            RAW_MESSAGE+="👤 Autor: ${PR_AUTHOR}\n"
+            RAW_MESSAGE+="🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}\n"
+            RAW_MESSAGE+="🔗 Ver Pull Request: ${PR_URL}\n"
+            RAW_MESSAGE+="💡 Resumen:\n${SUMMARY}"
+
+            # Escapamos todo correctamente
+            FINAL_MESSAGE=$(printf "%s" "$RAW_MESSAGE" | jq -Rs .)
+
+            curl -H "Content-Type: application/json" \
+                 -d "{\"text\": ${FINAL_MESSAGE}}" \
                  "${{ secrets.TEAMS_WEBHOOK_URL }}"
-          
