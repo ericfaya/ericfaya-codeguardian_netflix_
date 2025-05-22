@@ -61,62 +61,47 @@ jobs:
             ${{ env.PR_NUMBER }} \
             changed_files.txt
 
-      - name: Notificar en Teams (comentarios PR)
-        if: success()
+      - name: Generar resumen técnico con Groq y comentar en la PR
         run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
-          PR_URL="${{ github.event.pull_request.html_url }}"
-          COMMIT_MSG=$(git log --no-merges -1 --pretty=%s)
-          COMMIT_SHA=$(git log --no-merges -1 --pretty=%h)
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-      
-          DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | head -c 4000)
-      
-          echo "📄 Diff generado para el resumen:"
-          echo "$DIFF"
-      
-          SYSTEM_MSG="Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional."
-          USER_MSG="Resume esta PR para incluirlo como comentario automático:\n\n${DIFF}"
-      
+          COMMITS=$(git log origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --pretty=format:"- %s" | head -n 50)
+          FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} | head -n 20)
+          DIFFS=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | grep '^+[^+]' | head -n 50)
+
+          PROMPT="Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional.
+
+Resume esta Pull Request con base en la siguiente información:
+
+📝 Commits recientes:
+$COMMITS
+
+📂 Archivos modificados:
+$FILES
+
+🔍 Fragmentos de código añadido:
+$DIFFS
+
+Escribe un resumen técnico en una sola frase que abarque los principales cambios. Evita frases genéricas y no incluyas explicaciones del estilo 'Este resumen puede ser usado...'."
+
           jq -n \
-            --arg system "$SYSTEM_MSG" \
-            --arg user "$USER_MSG" \
+            --arg prompt "$PROMPT" \
             '{
-              model: "compound-beta",
-              messages: [
-                { role: "system", content: $system },
-                { role: "user", content: $user }
-              ],
-              temperature: 0.5
-            }' > body.json
-      
-          # Verificamos que el JSON es válido
-          cat body.json | jq .
-      
-          # Llamada a la API de Groq
+              model: "llama3-70b-8192",
+              messages: [{ role: "user", content: $prompt }],
+              temperature: 0.3
+            }' > summary_body.json
+
           curl -s https://api.groq.com/openai/v1/chat/completions \
             -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
             -H "Content-Type: application/json" \
-            -d @body.json > groq_output.json
-      
-          SUMMARY=$(jq -r '.choices[0].message.content' groq_output.json)
-      
+            -d @summary_body.json > groq_summary_output.json
+
+          SUMMARY=$(jq -r '.choices[0].message.content' groq_summary_output.json)
+
           if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
             SUMMARY="(No se pudo generar el resumen)"
           fi
-      
-          FINAL_MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
-          🔀 ${PR_TITLE}
-          👤 Autor: ${PR_AUTHOR}
-          🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
-          🔗 Ver Pull Request: ${PR_URL}
-          💡 Resumen:
-          ${SUMMARY}"
-      
-          ESCAPED_MESSAGE=$(printf '%s' "$FINAL_MESSAGE" | jq -Rs .)
-      
-          curl -H "Content-Type: application/json" \
-               -d "{\"text\": ${ESCAPED_MESSAGE}}" \
-               "${{ secrets.TEAMS_WEBHOOK_URL }}"
+
+          COMMENT="📝 *Resumen técnico generado por CodeGuardian*\n\n$SUMMARY"
+
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "$COMMENT"
