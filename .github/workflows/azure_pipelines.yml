@@ -71,51 +71,52 @@ jobs:
           COMMIT_MSG=$(git log --no-merges -1 --pretty=%s)
           COMMIT_SHA=$(git log --no-merges -1 --pretty=%h)
           git fetch origin ${{ github.event.pull_request.base.ref }}
-
+      
           DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | head -c 4000)
-
+      
           echo "📄 Diff generado para el resumen:"
           echo "$DIFF"
-
-          # Guardamos JSON del prompt en archivo temporal
-          echo '{
-            "model": "compound-beta",
-            "messages": [
-              {
-                "role": "system",
-                "content": "Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional."
-              },
-              {
-                "role": "user",
-                "content": "Resume esta PR para incluirlo como comentario automático:\n\n'"${DIFF}"'"
-              }
-            ],
-            "temperature": 0.5
-          }' > body.json
-
+      
+          SYSTEM_MSG="Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional."
+          USER_MSG="Resume esta PR para incluirlo como comentario automático:\n\n${DIFF}"
+      
+          jq -n \
+            --arg system "$SYSTEM_MSG" \
+            --arg user "$USER_MSG" \
+            '{
+              model: "compound-beta",
+              messages: [
+                { role: "system", content: $system },
+                { role: "user", content: $user }
+              ],
+              temperature: 0.5
+            }' > body.json
+      
+          # Verificamos que el JSON es válido
+          cat body.json | jq .
+      
           # Llamada a la API de Groq
           curl -s https://api.groq.com/openai/v1/chat/completions \
             -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
             -H "Content-Type: application/json" \
             -d @body.json > groq_output.json
-
+      
           SUMMARY=$(jq -r '.choices[0].message.content' groq_output.json)
-
+      
           if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
             SUMMARY="(No se pudo generar el resumen)"
           fi
-
+      
           FINAL_MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
-            🔀 ${PR_TITLE}
-            👤 Autor: ${PR_AUTHOR}
-            🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
-            🔗 Ver Pull Request: ${PR_URL}
-            💡 Resumen:
-            ${SUMMARY}"
-
-          # Escape JSON para Teams
+          🔀 ${PR_TITLE}
+          👤 Autor: ${PR_AUTHOR}
+          🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
+          🔗 Ver Pull Request: ${PR_URL}
+          💡 Resumen:
+          ${SUMMARY}"
+      
           ESCAPED_MESSAGE=$(printf '%s' "$FINAL_MESSAGE" | jq -Rs .)
-
+      
           curl -H "Content-Type: application/json" \
                -d "{\"text\": ${ESCAPED_MESSAGE}}" \
                "${{ secrets.TEAMS_WEBHOOK_URL }}"
