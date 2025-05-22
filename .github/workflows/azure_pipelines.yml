@@ -86,7 +86,11 @@ jobs:
             PR_URL="${{ github.event.pull_request.html_url }}"
             COMMIT_MSG=$(git log --no-merges -1 --pretty=%s)
             COMMIT_SHA=$(git log --no-merges -1 --pretty=%h)
-            DIFF=$(git fetch origin ${{ github.event.pull_request.base.ref }} > /dev/null 2>&1 && git diff origin/${{ github.event.pull_request.base.ref }}...HEAD)
+            git fetch origin ${{ github.event.pull_request.base.ref }}
+            DIFF=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | head -c 4000)
+            echo "📄 Diff generado para el resumen:"
+            echo "$DIFF"
+            #DIFF=$(git fetch origin ${{ github.event.pull_request.base.ref }} > /dev/null 2>&1 && git diff origin/${{ github.event.pull_request.base.ref }}...HEAD)
             SUMMARY=$(
                 curl -s https://api.groq.com/openai/v1/chat/completions \
                   -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
