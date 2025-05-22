@@ -112,12 +112,12 @@ jobs:
             
             SUMMARY_ESCAPED=$(echo "$SUMMARY" | sed ':a;N;$!ba;s/\n/\\n/g')
 
-            MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}\\n"
-            MESSAGE+="🔀 ${PR_TITLE}\\n"
-            MESSAGE+="👤 Autor: ${PR_AUTHOR}\\n"
-            MESSAGE+="🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}\\n"
-            MESSAGE+="🔗 [Ver Pull Request](${PR_URL})\\n"
-            MESSAGE+="💡 Resumen: ${SUMMARY_ESCAPED}"
+            MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
+            🔀 ${PR_TITLE}
+            👤 Autor: ${PR_AUTHOR}
+            🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
+            🔗 [Ver Pull Request](${PR_URL})
+            💡 Resumen: ${SUMMARY_ESCAPED}"
         
             curl -H 'Content-Type: application/json' \
                  -d "{\"text\": \"$MESSAGE\"}" \
