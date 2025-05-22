@@ -68,19 +68,19 @@ jobs:
           DIFFS=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | grep '^+[^+]' | head -n 50)
 
           PROMPT="Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional.
-
-Resume esta Pull Request con base en la siguiente información:
-
-📝 Commits recientes:
-$COMMITS
-
-📂 Archivos modificados:
-$FILES
-
-🔍 Fragmentos de código añadido:
-$DIFFS
-
-Escribe un resumen técnico en una sola frase que abarque los principales cambios. Evita frases genéricas y no incluyas explicaciones del estilo 'Este resumen puede ser usado...'."
+          
+          Resume esta Pull Request con base en la siguiente información:
+          
+          📝 Commits recientes:
+          $COMMITS
+          
+          📂 Archivos modificados:
+          $FILES
+          
+          🔍 Fragmentos de código añadido:
+          $DIFFS
+          
+          Escribe un resumen técnico en una sola frase que abarque los principales cambios. Evita frases genéricas y no incluyas explicaciones del estilo 'Este resumen puede ser usado...'."
 
           jq -n \
             --arg prompt "$PROMPT" \
