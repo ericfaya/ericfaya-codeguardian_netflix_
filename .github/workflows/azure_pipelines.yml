@@ -116,17 +116,20 @@ jobs:
           COMMENT="📝 *Resumen técnico generado por CodeGuardian*\n\n$SUMMARY"
           gh pr comment $PR_NUMBER --body "$COMMENT"
       
-          # ➤ Notificación en Teams
-          FINAL_MESSAGE="🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
+          # ➤ Notificación en Teams con formato correcto
+          FINAL_MESSAGE=$(cat <<EOF
+          🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}
           🔀 ${PR_TITLE}
           👤 Autor: ${PR_AUTHOR}
           🧾 Commit: ${COMMIT_SHA} - ${COMMIT_MSG}
           🔗 Ver Pull Request: ${PR_URL}
           💡 Resumen:
-          ${SUMMARY}"
-          
-          ESCAPED_MESSAGE=$(printf '%s' "$FINAL_MESSAGE" | jq -Rs .)
-      
+          ${SUMMARY}
+          EOF
+          )
+
+          ESCAPED_MESSAGE=$(jq -n --arg text "$FINAL_MESSAGE" '{ text: $text }')
+
           curl -H "Content-Type: application/json" \
-               -d "{\"text\": ${ESCAPED_MESSAGE}}" \
+               -d "$ESCAPED_MESSAGE" \
                "${{ secrets.TEAMS_WEBHOOK_URL }}"
