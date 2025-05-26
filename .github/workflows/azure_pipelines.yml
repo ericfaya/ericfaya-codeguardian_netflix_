@@ -113,8 +113,8 @@ jobs:
           fi
       
           # ➤ Comentario en la PR
-          COMMENT="📝 *Resumen técnico generado por CodeGuardian*\n\n$SUMMARY"
-          gh pr comment $PR_NUMBER --body "$COMMENT"
+          # COMMENT="📝 *Resumen técnico generado por CodeGuardian*\n\n$SUMMARY"
+          # gh pr comment $PR_NUMBER --body "$COMMENT"
       
           # ➤ Notificación en Teams usando MessageCard para soportar saltos de línea
           ESCAPED_SUMMARY=$(echo "$SUMMARY" | jq -Rs .)
