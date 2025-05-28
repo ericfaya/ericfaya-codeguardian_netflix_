@@ -42,6 +42,7 @@ jobs:
         run: |
           git fetch origin ${{ github.event.pull_request.base.ref }}
           git diff --find-renames=50% --find-copies --diff-filter=ACMRT \
+          --name-only \
             ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files.txt
           echo "🔍 Archivos cambiados entre base y head:"
           cat changed_files.txt
