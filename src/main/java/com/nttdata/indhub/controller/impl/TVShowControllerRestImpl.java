@@ -85,7 +85,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
 
   })
 
-  public NetflixResponse<PostTVShowRest> methodToCreateTVShow(
+  public NetflixResponse<PostTVShowRest> createTVShow(
 
       @RequestBody final PostTVShowRest tvShow) throws NetflixException {
     final PostTVShowRest tvShowRest = service.createTVShow(tvShow);
@@ -107,7 +107,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
 
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
-  public NetflixResponse<PostTVShowRest> methodToUpdateTVShow(@RequestBody final PostTVShowRest tvShow) throws NetflixException {
+  public NetflixResponse<PostTVShowRest> updateTVShow(@RequestBody final PostTVShowRest tvShow) throws NetflixException {
 
     final PostTVShowRest tvShowRest = service.updateTVShow(tvShow, tvShow.getId());
 
@@ -150,7 +150,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
 
   })
-  public NetflixResponse<TVShowRest> methodToAddSeasonToTVShow(@RequestParam final Long seasonId, @RequestParam final Long tvShowId) throws NetflixException {
+  public NetflixResponse<TVShowRest> addSeasonToTVShow(@RequestParam final Long seasonId, @RequestParam final Long tvShowId) throws NetflixException {
     final TVShowRest tvShowRest = service.addSeasonToTVShow(seasonId, tvShowId);
 
     return new NetflixResponse<>(HttpStatus.OK.toString(),
@@ -194,7 +194,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
 
   })
-  public NetflixResponse<TVShowRest> methodToAddCategoryToTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
+  public NetflixResponse<TVShowRest> ToAddCategoryToTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
     final TVShowRest tvShowRest = service.addCategoryToTVShow(categoryId, tvShowId);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
@@ -216,7 +216,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
   })
 
-  public NetflixResponse<TVShowRest> methodToDeleteCategoryOfTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
+  public NetflixResponse<TVShowRest> eleteCategoryOfTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
     final TVShowRest tvShowRest = service.deleteCategoryOfTVShow(categoryId, tvShowId);
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),

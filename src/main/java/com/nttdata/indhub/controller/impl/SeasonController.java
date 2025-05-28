@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import com.nttdata.indhub.controller.SeasonControllerRest;
 import com.nttdata.indhub.controller.model.rest.D4iPageRest;
 import com.nttdata.indhub.controller.model.rest.D4iPaginationInfo;
 import com.nttdata.indhub.controller.model.rest.NetflixResponse;
@@ -26,7 +25,7 @@ import com.nttdata.indhub.util.constant.RestConstantsUtils;
 @RestController
 @Tag(name = "Season", description = "Season Controller")
 @RequiredArgsConstructor
-public class SeasonController implements SeasonControllerRest {
+public class SeasonController implements com.nttdata.indhub.controller.SeasonController {
 
     private final SeasonService seasonService;
 

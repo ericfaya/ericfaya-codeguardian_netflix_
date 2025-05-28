@@ -30,6 +30,24 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
 
     private final ChapterService chapterService;
 
+
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "getChapterById", description = "Get Chapters by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<PostChapterRest> getChapterById(final Long id) throws NetflixException {
+        final PostChapterRest postChapterRest = chapterService.getChapterById(id);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, postChapterRest);
+    }
+
     @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,22 +70,6 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
                         new D4iPaginationInfo(postChapterRestList.getNumber(),
                                 pageable.getPageSize(),
                                 postChapterRestList.getTotalPages())));
-    }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "getChapterById", description = "Get Chapters by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<PostChapterRest> getChapterById(final Long id) throws NetflixException {
-        final PostChapterRest postChapterRest = chapterService.getChapterById(id);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, postChapterRest);
     }
 
     @Override
