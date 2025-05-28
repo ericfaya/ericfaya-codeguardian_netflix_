@@ -72,6 +72,44 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
     }
 
 
+
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID
+            + RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID + RestConstantsUtils.ADD
+            , produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "addActorToChapter", description = "Add an actor to Chapter")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<ChapterRest> addActorToChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
+        final ChapterRest chapterRest = service.addActorToChapter(actorId, chapterId);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, chapterRest);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID
+            + RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID + RestConstantsUtils.DELETE
+            , produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "deleteActorOfChapter", description = "Delete an Actor of Chapter")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<ChapterRest> deleteActorOfChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
+        final ChapterRest chapterRest = service.deleteActorOfChapter(actorId, chapterId);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, chapterRest);
+    }
+
     @Override
     @ResponseStatus(HttpStatus.OK)
     @PostMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -119,41 +157,5 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK);
-    }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID
-            + RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID + RestConstantsUtils.ADD
-            , produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "addActorToChapter", description = "Add an actor to Chapter")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<ChapterRest> addActorToChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
-        final ChapterRest chapterRest = service.addActorToChapter(actorId, chapterId);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, chapterRest);
-    }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID
-            + RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID + RestConstantsUtils.DELETE
-            , produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "deleteActorOfChapter", description = "Delete an Actor of Chapter")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<ChapterRest> deleteActorOfChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
-        final ChapterRest chapterRest = service.deleteActorOfChapter(actorId, chapterId);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, chapterRest);
     }
 }

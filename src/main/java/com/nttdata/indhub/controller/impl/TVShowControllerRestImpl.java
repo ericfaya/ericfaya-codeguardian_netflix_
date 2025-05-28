@@ -32,50 +32,6 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
 
   @Override
   @ResponseStatus(HttpStatus.OK)
-  @PostMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID
-          + RestConstantsUtils.RESOURCE_CATEGORIES + RestConstantsUtils.RESOURCE_CATEGORY_ID + RestConstantsUtils.ADD
-          , produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "addCategoryToTVShow", description = "Add a Category to TVShow")
-  @ApiResponses(value = {
-
-          @ApiResponse(responseCode = "200"),
-
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-
-          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-
-  })
-  public NetflixResponse<TVShowRest> addCategoryToTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
-    final TVShowRest tvShowRest = service.addCategoryToTVShow(categoryId, tvShowId);
-    return new NetflixResponse<>(HttpStatus.OK.toString(),
-            String.valueOf(HttpStatus.OK.value()),
-            CommonConstantsUtils.OK, tvShowRest);
-  }
-
-  @Override
-  @ResponseStatus(HttpStatus.OK)
-  @PostMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID
-          + RestConstantsUtils.RESOURCE_CATEGORIES + RestConstantsUtils.RESOURCE_CATEGORY_ID + RestConstantsUtils.DELETE
-          , produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "deleteCategoryToTVShow", description = "Delete a Category to TVShow")
-  @ApiResponses(value = {
-
-          @ApiResponse(responseCode = "200"),
-
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-
-          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-  })
-
-  public NetflixResponse<TVShowRest> DeleteCategoryOfTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
-    final TVShowRest tvShowRest = service.deleteCategoryOfTVShow(categoryId, tvShowId);
-    return new NetflixResponse<>(HttpStatus.OK.toString(),
-            String.valueOf(HttpStatus.OK.value()),
-            CommonConstantsUtils.OK, tvShowRest);
-  }
-
-  @Override
-  @ResponseStatus(HttpStatus.OK)
   @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS, produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "getAllTVShows", description = "Get all TVShow paginated")
   @ApiResponses(value = {
@@ -141,25 +97,6 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
 
   @Override
   @ResponseStatus(HttpStatus.OK)
-  @DeleteMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "deleteTVShow", description = "Delete an existing TVShow")
-  @ApiResponses(value = {
-
-          @ApiResponse(responseCode = "200"),
-
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-
-          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-  })
-  public NetflixResponse<Object> TodeleteTVShow(@RequestParam final Long id) throws NetflixException {
-    service.deleteTVShow(id);
-    return new NetflixResponse<>(HttpStatus.OK.toString(),
-            String.valueOf(HttpStatus.OK.value()),
-            CommonConstantsUtils.OK);
-  }
-
-  @Override
-  @ResponseStatus(HttpStatus.OK)
   @PutMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID, produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "updateTVShow", description = "Update an existing TVShow")
   @ApiResponses(value = {
@@ -179,7 +116,24 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
         CommonConstantsUtils.OK, tvShowRest);
   }
 
+  @Override
+  @ResponseStatus(HttpStatus.OK)
+  @DeleteMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "deleteTVShow", description = "Delete an existing TVShow")
+  @ApiResponses(value = {
 
+      @ApiResponse(responseCode = "200"),
+
+      @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+
+      @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+  })
+  public NetflixResponse<Object> deleteTVShow(@RequestParam final Long id) throws NetflixException {
+    service.deleteTVShow(id);
+    return new NetflixResponse<>(HttpStatus.OK.toString(),
+        String.valueOf(HttpStatus.OK.value()),
+        CommonConstantsUtils.OK);
+  }
 
   @Override
   @ResponseStatus(HttpStatus.OK)
@@ -196,7 +150,7 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
 
   })
-  public NetflixResponse<TVShowRest> addSeasonToTVShow(@RequestParam final Long seasonId, @RequestParam final Long tvShowId) throws NetflixException {
+  public NetflixResponse<TVShowRest> methodToAddSeasonToTVShow(@RequestParam final Long seasonId, @RequestParam final Long tvShowId) throws NetflixException {
     final TVShowRest tvShowRest = service.addSeasonToTVShow(seasonId, tvShowId);
 
     return new NetflixResponse<>(HttpStatus.OK.toString(),
@@ -225,5 +179,47 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
         CommonConstantsUtils.OK, tvShowRest);
   }
 
+  @Override
+  @ResponseStatus(HttpStatus.OK)
+  @PostMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID
+      + RestConstantsUtils.RESOURCE_CATEGORIES + RestConstantsUtils.RESOURCE_CATEGORY_ID + RestConstantsUtils.ADD
+      , produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "addCategoryToTVShow", description = "Add a Category to TVShow")
+  @ApiResponses(value = {
 
+      @ApiResponse(responseCode = "200"),
+
+      @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+
+      @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+
+  })
+  public NetflixResponse<TVShowRest> methodToAddCategoryToTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
+    final TVShowRest tvShowRest = service.addCategoryToTVShow(categoryId, tvShowId);
+    return new NetflixResponse<>(HttpStatus.OK.toString(),
+        String.valueOf(HttpStatus.OK.value()),
+        CommonConstantsUtils.OK, tvShowRest);
+  }
+
+  @Override
+  @ResponseStatus(HttpStatus.OK)
+  @PostMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + RestConstantsUtils.RESOURCE_TVSHOW_ID
+      + RestConstantsUtils.RESOURCE_CATEGORIES + RestConstantsUtils.RESOURCE_CATEGORY_ID + RestConstantsUtils.DELETE
+      , produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "deleteCategoryToTVShow", description = "Delete a Category to TVShow")
+  @ApiResponses(value = {
+
+      @ApiResponse(responseCode = "200"),
+
+      @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+
+      @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+  })
+
+  public NetflixResponse<TVShowRest> methodToDeleteCategoryOfTVShow(@RequestParam final Long categoryId, @RequestParam final Long tvShowId) throws NetflixException {
+    final TVShowRest tvShowRest = service.deleteCategoryOfTVShow(categoryId, tvShowId);
+    return new NetflixResponse<>(HttpStatus.OK.toString(),
+        String.valueOf(HttpStatus.OK.value()),
+        CommonConstantsUtils.OK, tvShowRest);
+  }
 }
