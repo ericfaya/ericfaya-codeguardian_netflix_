@@ -38,25 +38,26 @@ jobs:
           echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
 
-      - name: Get changed files ONLY from last commit not present before
+      - name: Detect files changed in the latest push (diff within PR)
         run: |
-          BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          LAST_COMMIT_SHA=$(git rev-parse HEAD)
-          PREV_COMMIT_SHA=$(git rev-parse HEAD^)
+          COMMITS=($(git rev-list --no-merges --reverse origin/${{ github.event.pull_request.base.ref }}..HEAD))
+          
+          if [ "${#COMMITS[@]}" -lt 2 ]; then
+            echo "Solo hay un commit en la PR, usando base y head SHA para comparación"
+            PREV_COMMIT=${{ github.event.pull_request.base.sha }}
+            LAST_COMMIT=${{ github.event.pull_request.head.sha }}
+          else
+            PREV_COMMIT=${COMMITS[-2]}
+            LAST_COMMIT=${COMMITS[-1]}
+          fi
 
-          echo "🔁 Comparando: $BASE_SHA .. $PREV_COMMIT_SHA (previos) VS $PREV_COMMIT_SHA .. $LAST_COMMIT_SHA (último commit)"
-
-          # Archivos del último commit
-          git diff --name-only $PREV_COMMIT_SHA $LAST_COMMIT_SHA | sort > last_commit.txt
-
-          # Archivos ya modificados anteriormente en la PR (antes del último commit)
-          git diff --name-only $BASE_SHA $PREV_COMMIT_SHA | sort > pr_before_last.txt
-
-          # Archivos nuevos/modificados exclusivamente en el último commit (no estaban antes)
-          comm -23 last_commit.txt pr_before_last.txt > changed_files.txt
-
-          echo "🧠 Archivos modificados ÚNICAMENTE en el último commit:"
+          echo "🔁 Comparando: $PREV_COMMIT .. $LAST_COMMIT"
+          git diff --name-only $PREV_COMMIT $LAST_COMMIT > changed_files.txt
+          echo "🧠 Archivos modificados entre los dos últimos commits:"
           cat changed_files.txt
+
+          echo "PREV_COMMIT=$PREV_COMMIT" >> $GITHUB_ENV
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
           
       - name: Get Pull Request Info
         run: |
