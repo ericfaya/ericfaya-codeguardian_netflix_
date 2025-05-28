@@ -38,13 +38,24 @@ jobs:
           echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
 
-      - name: Get changed files between PR base and head
+      - name: Get changed files ONLY from last commit not present before
         run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          git diff --find-renames=50% --find-copies --diff-filter=ACMRT \
-          --name-only \
-            ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files.txt
-          echo "🔍 Archivos cambiados entre base y head:"
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          LAST_COMMIT_SHA=$(git rev-parse HEAD)
+          PREV_COMMIT_SHA=$(git rev-parse HEAD^)
+
+          echo "🔁 Comparando: $BASE_SHA .. $PREV_COMMIT_SHA (previos) VS $PREV_COMMIT_SHA .. $LAST_COMMIT_SHA (último commit)"
+
+          # Archivos del último commit
+          git diff --name-only $PREV_COMMIT_SHA $LAST_COMMIT_SHA | sort > last_commit.txt
+
+          # Archivos ya modificados anteriormente en la PR (antes del último commit)
+          git diff --name-only $BASE_SHA $PREV_COMMIT_SHA | sort > pr_before_last.txt
+
+          # Archivos nuevos/modificados exclusivamente en el último commit (no estaban antes)
+          comm -23 last_commit.txt pr_before_last.txt > changed_files.txt
+
+          echo "🧠 Archivos modificados ÚNICAMENTE en el último commit:"
           cat changed_files.txt
           
       - name: Get Pull Request Info
