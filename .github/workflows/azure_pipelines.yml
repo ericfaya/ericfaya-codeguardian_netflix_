@@ -41,7 +41,8 @@ jobs:
       - name: Get files changed in latest commit of PR
         id: get_changed_files
         run: |
-          git diff --name-only ${{ env.PR_SHA }}^ ${{ env.PR_SHA }} > changed_files.txt
+          git fetch origin main
+          git diff --find-renames=50% --find-copies --diff-filter=ACMRT --name-status origin/main...HEAD
           echo "🔍 Archivos cambiados en el último commit:"
           cat changed_files.txt
 
