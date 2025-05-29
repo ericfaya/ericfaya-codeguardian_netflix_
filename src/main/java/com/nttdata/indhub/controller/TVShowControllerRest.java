@@ -9,21 +9,21 @@ import com.nttdata.indhub.exception.NetflixException;
 
 public interface TVShowControllerRest {
 
-  NetflixResponse<D4iPageRest<PostTVShowRest>> getAllTVShows(int page, int size, Pageable pageable) throws NetflixException;
+  NetflixResponse<D4iPageRest<PostTVShowRest>> fetchAllTVShows(int page, int size, Pageable pageable) throws NetflixException;
 
   NetflixResponse<PostTVShowRest> getTVShowById(Long id) throws NetflixException;
 
-  NetflixResponse<PostTVShowRest> createTVShow(PostTVShowRest tvShow) throws NetflixException;
+  NetflixResponse<PostTVShowRest> ceateTVShow(PostTVShowRest tvShow) throws NetflixException;
 
-  NetflixResponse<PostTVShowRest> updateTVShow(PostTVShowRest tvShow) throws NetflixException;
+  NetflixResponse<PostTVShowRest> methodTOUpdateTVShow(PostTVShowRest tvShow) throws NetflixException;
 
-  NetflixResponse<Object> deleteTVShow(Long id) throws NetflixException;
+  NetflixResponse<Object> DeleteTVShow(Long id) throws NetflixException;
 
-  NetflixResponse<TVShowRest> addSeasonToTVShow(Long seasonId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> MethodToAddSeasonToTVShow(Long seasonId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> deleteSeasonOfTVShow(Long seasonId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> methodTodeleteSeasonOfTVShow(Long seasonId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> addCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> methodToddCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> deleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> methodToDeleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 }
