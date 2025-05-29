@@ -30,45 +30,6 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
 
     private final ChapterService service;
 
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "getAllChapters", description = "Get all Chapter paginated")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<D4iPageRest<PostChapterRest>> getAllChapters(
-            @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
-            @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
-            @Parameter(hidden = true) final Pageable pageable)
-            throws NetflixException {
-        final Page<PostChapterRest> postChapterRestList = service.getAllChapters(pageable);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK,
-                new D4iPageRest<>(postChapterRestList.getContent().toArray(PostChapterRest[]::new),
-                        new D4iPaginationInfo(postChapterRestList.getNumber(),
-                                pageable.getPageSize(),
-                                postChapterRestList.getTotalPages())));
-    }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "getChapterById", description = "Get Chapters by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<PostChapterRest> getChapterById(final Long id) throws NetflixException {
-        final PostChapterRest postChapterRest = service.getChapterById(id);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, postChapterRest);
-    }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -153,5 +114,46 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, chapterRest);
+    }
+
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "getAllChapters", description = "Get all Chapter paginated")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<D4iPageRest<PostChapterRest>> getAllChapters(
+            @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
+            @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
+            @Parameter(hidden = true) final Pageable pageable)
+            throws NetflixException {
+        final Page<PostChapterRest> postChapterRestList = service.getAllChapters(pageable);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK,
+                new D4iPageRest<>(postChapterRestList.getContent().toArray(PostChapterRest[]::new),
+                        new D4iPaginationInfo(postChapterRestList.getNumber(),
+                                pageable.getPageSize(),
+                                postChapterRestList.getTotalPages())));
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "getChapterById", description = "Get Chapters by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<PostChapterRest> getChapterById(final Long id) throws NetflixException {
+        final PostChapterRest postChapterRest = service.getChapterById(id);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, postChapterRest);
     }
 }
