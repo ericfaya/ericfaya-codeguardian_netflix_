@@ -59,10 +59,10 @@ jobs:
           echo "PREV_COMMIT=$PREV_COMMIT" >> $GITHUB_ENV
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
                 
-            - name: Get Pull Request Info
-              run: |
-                echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-                echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+      - name: Get Pull Request Info
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
 
       - name: Run CodeGuardian JAR
         run: |
