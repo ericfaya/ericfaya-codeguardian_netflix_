@@ -38,10 +38,10 @@ jobs:
           echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
 
-      - name: Detect files changed in the latest push (diff within PR)
+      - name: Detect files changed en el último push (diff dentro de la PR)
         run: |
           COMMITS=($(git rev-list --no-merges --reverse origin/${{ github.event.pull_request.base.ref }}..HEAD))
-          
+      
           if [ "${#COMMITS[@]}" -lt 2 ]; then
             echo "Solo hay un commit en la PR, usando base y head SHA para comparación"
             PREV_COMMIT=${{ github.event.pull_request.base.sha }}
@@ -52,8 +52,12 @@ jobs:
           fi
       
           echo "🔁 Comparando: $PREV_COMMIT .. $LAST_COMMIT"
-          git diff --find-renames --name-status $PREV_COMMIT $LAST_COMMIT > changed_files.txt
-          echo "🧠 Archivos modificados entre los dos últimos commits:"
+      
+          echo "🧠 Archivos modificados entre los dos últimos commits (con estado):"
+          git diff --find-renames --name-status $PREV_COMMIT $LAST_COMMIT
+      
+          echo "📁 Guardando solo rutas de archivo en changed_files.txt:"
+          git diff --find-renames --name-only $PREV_COMMIT $LAST_COMMIT > changed_files.txt
           cat changed_files.txt
       
           echo "PREV_COMMIT=$PREV_COMMIT" >> $GITHUB_ENV
