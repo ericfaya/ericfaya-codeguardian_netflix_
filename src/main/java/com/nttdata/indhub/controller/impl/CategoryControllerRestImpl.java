@@ -25,7 +25,7 @@ import com.nttdata.indhub.util.constant.RestConstantsUtils;
 @RestController
 @Tag(name = "Category", description = "Category Controller")
 @RequiredArgsConstructor
-public class CategoryController implements CategoryControllerRest {
+public class CategoryControllerRestImpl implements CategoryControllerRest {
 
   private final CategoryService categoryService;
 
