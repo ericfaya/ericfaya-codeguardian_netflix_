@@ -32,39 +32,6 @@ public class ActorControllerRestImpl implements ActorControllerRest {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "deleteActor", description = "Delete an existing Actor")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<Object> deleteActor(@RequestParam final Long id) throws NetflixException {
-        actorService.deleteActor(id);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK);
-    }
-
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS_LARGE + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "getActorInfoById", description = "Get Actors TVShows and Chapters by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    @Override
-    public NetflixResponse<ActorRest> getActorTVShowsChapters(final Long id) throws NetflixException {
-        final ActorRest actorRest = actorService.getActorTVShowsChapters(id);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, actorRest);
-    }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "getAllActors", description = "Get all Actors paginated")
     @ApiResponses(value = {
@@ -136,5 +103,36 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 CommonConstantsUtils.OK, actorRest);
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "deleteActor", description = "Delete an existing Actor")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<Object> deleteActor(@RequestParam final Long id) throws NetflixException {
+        actorService.deleteActor(id);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK);
+    }
 
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS_LARGE + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "getActorInfoById", description = "Get Actors TVShows and Chapters by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    @Override
+    public NetflixResponse<ActorRest> getActorTVShowsChapters(final Long id) throws NetflixException {
+        final ActorRest actorRest = actorService.getActorTVShowsChapters(id);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, actorRest);
+    }
 }

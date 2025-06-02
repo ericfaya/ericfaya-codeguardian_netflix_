@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import com.nttdata.indhub.controller.ChapterController;
+import com.nttdata.indhub.controller.ChapterControllerRest;
 import com.nttdata.indhub.controller.model.rest.D4iPageRest;
 import com.nttdata.indhub.controller.model.rest.D4iPaginationInfo;
 import com.nttdata.indhub.controller.model.rest.NetflixResponse;
@@ -26,7 +26,7 @@ import com.nttdata.indhub.util.constant.RestConstantsUtils;
 @RestController
 @Tag(name = "Chapter", description = "Chapter Controller")
 @RequiredArgsConstructor
-public class ChapterControllerImpl implements ChapterController {
+public class ChapterControllerRestImpl implements ChapterControllerRest {
 
     private final ChapterService service;
 
