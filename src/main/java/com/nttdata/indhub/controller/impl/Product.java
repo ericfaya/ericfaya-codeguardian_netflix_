@@ -1,11 +1,12 @@
 package com.nttdata.indhub.controller.impl;
 
-public class NewClass {
+public class Product {
+
     private static final int id = 0;
     private static String brand;
     private static String model;
 
-    public NewClass(){
+    public Product(){
 
     }
 
@@ -24,4 +25,5 @@ public class NewClass {
     public void setModel(String model) {
         this.model = model;
     }
+
 }
