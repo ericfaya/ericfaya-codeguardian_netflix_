@@ -1,4 +1,3 @@
-
 package com.nttdata.indhub.controller;
 
 import org.springframework.data.domain.Pageable;
@@ -14,22 +13,20 @@ public interface TVShowControllerRest {
 
   NetflixResponse<PostTVShowRest> getTVShowById(Long id) throws NetflixException;
 
-  NetflixResponse<PostTVShowRest> createTVShow(PostTVShowRest tvShow) throws NetflixException;
+  NetflixResponse<PostTVShowRest> ceateTVShow(PostTVShowRest tvShow) throws NetflixException;
 
-  NetflixResponse<PostTVShowRest> methodToUpdateTVShow(PostTVShowRest tvShow) throws NetflixException;
+  NetflixResponse<PostTVShowRest> UpdateTVShow(PostTVShowRest tvShow) throws NetflixException;
 
-  NetflixResponse<Object> METhOdtODeleteTVShow(Long id) throws NetflixException;
+  NetflixResponse<Object> deleteTVShow(Long id) throws NetflixException;
 
-  NetflixResponse<TVShowRest> METHOD_TO_addSeasonToTVShow(Long seasonId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> addSeasonToTVShow(Long seasonId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> METHOD_TOdeleteSeasonOfTVShow(Long seasonId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> deleteSeasonOfTVShow(Long seasonId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> methodTOddCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> ddCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> methodToDeleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> DeleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 }
-
-
 
 
 
