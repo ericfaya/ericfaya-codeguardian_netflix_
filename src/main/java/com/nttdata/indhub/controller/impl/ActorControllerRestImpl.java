@@ -32,6 +32,30 @@ public class ActorControllerRestImpl implements ActorControllerRest {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "getAllActors", description = "Get all Actors paginated")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<D4iPageRest<PostActorRest>> getAllActors(
+            @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
+            @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
+            @Parameter(hidden = true) final Pageable pageable)
+            throws NetflixException {
+        final Page<PostActorRest> postActorRestList = actorService.getAllActors(pageable);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK,
+                new D4iPageRest<>(postActorRestList.getContent().toArray(PostActorRest[]::new),
+                        new D4iPaginationInfo(postActorRestList.getNumber(),
+                                pageable.getPageSize(),
+                                postActorRestList.getTotalPages())));
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "getActorById", description = "Get Actors by id")
     @ApiResponses(value = {
@@ -45,23 +69,6 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, postActorRest);
     }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "deleteActor", description = "Delete an existing Actor")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<Object> deleteActor(@RequestParam final Long id) throws NetflixException {
-        actorService.deleteActor(id);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK);
-    }
-
 
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -96,30 +103,20 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 CommonConstantsUtils.OK, actorRest);
     }
 
-
-
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "getAllActors", description = "Get all Actors paginated")
+    @DeleteMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "deleteActor", description = "Delete an existing Actor")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
-    public NetflixResponse<D4iPageRest<PostActorRest>> getAllActors(
-            @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
-            @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
-            @Parameter(hidden = true) final Pageable pageable)
-            throws NetflixException {
-        final Page<PostActorRest> postActorRestList = actorService.getAllActors(pageable);
+    public NetflixResponse<Object> deleteActor(@RequestParam final Long id) throws NetflixException {
+        actorService.deleteActor(id);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK,
-                new D4iPageRest<>(postActorRestList.getContent().toArray(PostActorRest[]::new),
-                        new D4iPaginationInfo(postActorRestList.getNumber(),
-                                pageable.getPageSize(),
-                                postActorRestList.getTotalPages())));
+                CommonConstantsUtils.OK);
     }
 
 
@@ -138,5 +135,4 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, actorRest);
     }
-
 }
