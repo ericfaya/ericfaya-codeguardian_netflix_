@@ -6,7 +6,7 @@ import com.nttdata.indhub.controller.model.rest.D4iPageRest;
 import com.nttdata.indhub.controller.model.rest.NetflixResponse;
 import com.nttdata.indhub.exception.NetflixException;
 
-public interface CategoryControllerRest {
+public interface CategoryController {
 
   NetflixResponse<D4iPageRest<CategoryRest>> getAllCategories(int page, int size, Pageable pageable) throws NetflixException;
 
