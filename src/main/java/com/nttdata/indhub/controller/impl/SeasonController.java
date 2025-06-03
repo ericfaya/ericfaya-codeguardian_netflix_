@@ -25,7 +25,7 @@ import com.nttdata.indhub.util.constant.RestConstantsUtils;
 @RestController
 @Tag(name = "Season", description = "Season Controller")
 @RequiredArgsConstructor
-public class SeasonController implements com.nttdata.indhub.controller.SeasonController {
+public class SeasonController implements com.nttdata.indhub.controller.SeasonControllerRest {
 
     private final SeasonService seasonService;
 
@@ -39,7 +39,9 @@ public class SeasonController implements com.nttdata.indhub.controller.SeasonCon
 
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
 
+
     })
+
     public NetflixResponse<D4iPageRest<PostSeasonRest>> getAllSeasons(
             @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
             @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
