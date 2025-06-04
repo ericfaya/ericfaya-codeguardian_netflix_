@@ -13,19 +13,19 @@ public interface TVShowControllerRest {
 
   NetflixResponse<PostTVShowRest> getTVShowById(Long id) throws NetflixException;
 
-  NetflixResponse<PostTVShowRest> ceateTVShow(PostTVShowRest tvShow) throws NetflixException;
+  NetflixResponse<PostTVShowRest> CeateTVShow(PostTVShowRest tvShow) throws NetflixException;
 
-  NetflixResponse<PostTVShowRest> UpdateTVShow(PostTVShowRest tvShow) throws NetflixException;
+  NetflixResponse<PostTVShowRest> MeThOdTOUpdateTVShow(PostTVShowRest tvShow) throws NetflixException;
 
-  NetflixResponse<Object> deleteTVShow(Long id) throws NetflixException;
+  NetflixResponse<Object> METHODOTdeleteTVShow(Long id) throws NetflixException;
 
-  NetflixResponse<TVShowRest> addSeasonToTVShow(Long seasonId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> methodToaddSeasonToTVShow(Long seasonId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> deleteSeasonOfTVShow(Long seasonId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> METHOD_TO_DeleteSeasonOfTVShow(Long seasonId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> ddCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> adddCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 
-  NetflixResponse<TVShowRest> DeleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<TVShowRest> deleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 }
 
 

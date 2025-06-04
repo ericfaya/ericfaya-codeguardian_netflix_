@@ -7,7 +7,7 @@ import com.nttdata.indhub.controller.model.rest.NetflixResponse;
 import com.nttdata.indhub.controller.model.rest.restSeason.PostSeasonRest;
 import com.nttdata.indhub.exception.NetflixException;
 
-public interface SeasonControllerRest {
+public interface SeasonController {
 
   NetflixResponse<D4iPageRest<PostSeasonRest>> getAllSeasons(int page, int size, Pageable pageable) throws NetflixException;
 
