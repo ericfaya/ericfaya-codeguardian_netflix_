@@ -23,6 +23,8 @@ import com.nttdata.indhub.service.TVShowService;
 import com.nttdata.indhub.util.constant.CommonConstantsUtils;
 import com.nttdata.indhub.util.constant.RestConstantsUtils;
 
+import java.util.List;
+
 @RestController
 @Tag(name = "TVShow", description = "TVShow Controller")
 @RequiredArgsConstructor
@@ -222,4 +224,19 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK, tvShowRest);
   }
+
+  @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "searchTVShowsByName", description = "Search TV shows by name")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200"),
+          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+  })
+  public NetflixResponse<List<PostTVShowRest>> searchTVShowsByName(@RequestParam final String name) throws NetflixException {
+    final List<PostTVShowRest> result = service.searchTVShowsByName(name);
+    return new NetflixResponse<>(HttpStatus.OK.toString(),
+            String.valueOf(HttpStatus.OK.value()),
+            CommonConstantsUtils.OK, result);
+  }
+
 }

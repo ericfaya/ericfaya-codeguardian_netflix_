@@ -7,6 +7,8 @@ import com.nttdata.indhub.controller.model.rest.NetflixResponse;
 import com.nttdata.indhub.controller.model.rest.restTVShow.PostTVShowRest;
 import com.nttdata.indhub.exception.NetflixException;
 
+import java.util.List;
+
 public interface TVShowControllerRest {
 
   NetflixResponse<D4iPageRest<PostTVShowRest>> fetchAllTVShows(int page, int size, Pageable pageable) throws NetflixException;
@@ -26,6 +28,7 @@ public interface TVShowControllerRest {
   NetflixResponse<TVShowRest> adddCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 
   NetflixResponse<TVShowRest> deleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+  NetflixResponse<List<PostTVShowRest>> searchTVShowsByName(String name) throws NetflixException;
 }
 
 
