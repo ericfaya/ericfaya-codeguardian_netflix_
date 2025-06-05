@@ -1,0 +1,27 @@
+name: Auto-asignar revisor si hay 5 commits
+
+on:
+  push:
+    branches:
+      - '**'  # Captura pushes a todas las ramas, incluidas de PRs
+
+jobs:
+  assign-reviewer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: pip install PyGithub
+
+      - name: Run reviewer assignment script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/assign_reviewer.py
