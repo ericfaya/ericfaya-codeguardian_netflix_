@@ -19,6 +19,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install PyGithub
+     
+      - name: Install dependencies
+        run: pip install GitPython
 
       - name: Construir contexto 
         run: python .github/workflows/scripts/build_user_contexts.py
