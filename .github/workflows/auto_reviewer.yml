@@ -20,7 +20,10 @@ jobs:
       - name: Install dependencies
         run: pip install PyGithub
 
+      - name: Construir contexto 
+        run: python .github/workflows/scripts/build_user_contexts.py
+
       - name: Run reviewer assignment script
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
-        run: python scripts/assign_reviewer.py
+        run: python .github/workflows/scripts/assign_reviewer.py
