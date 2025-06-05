@@ -6,8 +6,7 @@ import os
 repo = Repo(".")
 user_contexts = defaultdict(lambda: defaultdict(int))
 
-default_branch = repo.remotes.origin.refs['HEAD'].reference.remote_head
-for commit in repo.iter_commits(default_branch, max_count=1000):
+for commit in repo.iter_commits("HEAD", max_count=1000):
     author = commit.author.name
     for file in commit.stats.files:
         parts = file.split("/")
