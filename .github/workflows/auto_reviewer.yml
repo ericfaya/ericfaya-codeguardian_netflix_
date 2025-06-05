@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -18,10 +20,7 @@ jobs:
           python-version: 3.11
 
       - name: Install dependencies
-        run: pip install PyGithub
-     
-      - name: Install dependencies
-        run: pip install GitPython
+        run: pip install PyGithub GitPython
 
       - name: Construir contexto 
         run: python .github/workflows/scripts/build_user_contexts.py
