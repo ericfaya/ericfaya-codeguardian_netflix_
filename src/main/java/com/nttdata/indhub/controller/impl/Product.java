@@ -23,6 +23,7 @@ public class Product {
         return model;
     }
 
+
     public void setModel(String model) {
         this.model = model;
     }
