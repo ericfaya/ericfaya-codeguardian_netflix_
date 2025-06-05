@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @Tag(name = "TVShow", description = "TVShow Controller")
 @RequiredArgsConstructor
-public class TVShowController implements TVShowControllerRest {
+public class TVShowControllerRestImpl implements TVShowControllerRest {
 
   private final TVShowService service;
 
