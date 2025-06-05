@@ -27,5 +27,5 @@ jobs:
 
       - name: Run reviewer assignment script
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
         run: python .github/workflows/scripts/assign_reviewer.py
