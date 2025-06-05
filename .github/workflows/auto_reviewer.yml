@@ -1,9 +1,8 @@
 name: Auto-asignar revisor si hay 5 commits
 
 on:
-  push:
-    branches:
-      - '**'  # Captura pushes a todas las ramas, incluidas de PRs
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   assign-reviewer:
