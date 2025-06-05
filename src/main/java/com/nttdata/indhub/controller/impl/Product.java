@@ -14,9 +14,11 @@ public class Product {
         return brand;
     }
 
+
     public void setBrand(String brand) {
         this.brand = brand;
     }
+
 
     public static String getModel() {
         return model;
