@@ -8,7 +8,7 @@ with open("user_contexts.json") as f:
     user_contexts = json.load(f)
 
 # Conectar con GitHub
-token = os.environ["GITHUB_TOKEN"]
+token = os.environ["TOKEN_GITHUB"]
 repo_name = os.environ["GITHUB_REPOSITORY"]
 gh = Github(token)
 repo = gh.get_repo(repo_name)
