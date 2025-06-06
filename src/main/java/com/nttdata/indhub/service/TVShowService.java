@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import com.nttdata.indhub.controller.model.rest.restTVShow.PostTVShowRest;
 import com.nttdata.indhub.exception.NetflixException;
 
+import java.util.List;
+
 public interface TVShowService {
 
   Page<PostTVShowRest> getAllTVShows(Pageable pageable) throws NetflixException;
@@ -25,5 +27,8 @@ public interface TVShowService {
   TVShowRest addCategoryToTVShow(Long categoryId, Long tvShowId) throws NetflixException;
 
   TVShowRest deleteCategoryOfTVShow(Long categoryId, Long tvShowId) throws NetflixException;
+
+  List<PostTVShowRest> searchTVShowsByName(String name) throws NetflixException;
+
 
 }
