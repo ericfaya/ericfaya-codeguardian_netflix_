@@ -4,7 +4,7 @@ import json
 import os
 import pandas as pd
 import seaborn as sns
-import matploit.pyplot as plt
+import matplotlib.pyplot as plt
 
 #Objetivo: generar un vector similar al de los usuarios, pero basado en los ficheros tocados en la PR
 
