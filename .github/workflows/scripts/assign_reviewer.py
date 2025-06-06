@@ -1,42 +1,84 @@
-from git import Repo
-from collections import defaultdict
-import json
 import os
+import json
+from github import Github
+from collections import defaultdict
 
-# Inicializar repo
-repo = Repo(".")
-user_contexts = defaultdict(lambda: defaultdict(int))
-author_map = {}
+# Cargar contexto histórico
+with open("user_contexts.json") as f:
+    user_contexts = json.load(f)
 
-# Detectar rama por defecto si no sabes si es 'main' o 'master'
-for commit in repo.iter_commits("HEAD", max_count=1000):
-    author_name = commit.author.name
-    author_email = commit.author.email
+# Conectar con GitHub
+token = os.environ["GITHUB_TOKEN"]
+repo_name = os.environ["GITHUB_REPOSITORY"]
+gh = Github(token)
+repo = gh.get_repo(repo_name)
 
-    # Inferir el GitHub login si está disponible en los datos (opcional)
-    github_login = author_name.lower().replace(" ", "")  # Personaliza si quieres más precisión
-
-    author_map[author_name] = github_login
-
-    for file_path in commit.stats.files:
-        parts = file_path.split("/")
+def vector_from_files(file_paths):
+    vector = defaultdict(int)
+    for file in file_paths:
+        parts = file.filename.split("/")
         if len(parts) < 2:
             continue
-
         package = ".".join(parts[:-1])
         filename = parts[-1]
         ext = filename.split(".")[-1]
+        vector[f"file:{filename}"] += 1
+        vector[f"package:{package}"] += 1
+        vector[f"type:{ext}"] += 1
+    return dict(vector)
 
-        user_contexts[github_login][f"file:{filename}"] += 1
-        user_contexts[github_login][f"package:{package}"] += 1
-        user_contexts[github_login][f"type:{ext}"] += 1
+def similarity(vec1, vec2):
+    common_keys = set(vec1.keys()) & set(vec2.keys())
+    if not common_keys:
+        return 0
+    score = sum(min(vec1[k], vec2[k]) for k in common_keys)
+    return score
 
-# Guardar vectores contextuales
-with open("user_contexts.json", "w") as f:
-    json.dump({u: dict(v) for u, v in user_contexts.items()}, f, indent=2)
+# Evaluar PRs abiertas
+for pr in repo.get_pulls(state="open"):
+    if pr.commits < 5 or pr.requested_reviewers:
+        continue
 
-# Guardar mapeo de autores
-with open("author_map.json", "w") as f:
-    json.dump(author_map, f, indent=2)
+    print(f"Evaluando PR #{pr.number} con {pr.commits} commits...")
 
-print("✅ user_contexts.json y author_map.json generados correctamente.")
+    author = pr.user.login.lower()
+
+    files = pr.get_files()
+    pr_vector = vector_from_files(files)
+
+    best_user = None
+    best_score = -1
+
+    # Calcular mejor afinidad
+    for user, context in user_contexts.items():
+        score = similarity(pr_vector, context)
+        print(f"  Afinidad con {user}: {score}")
+        if score > best_score:
+            best_score = score
+            best_user = user
+
+    # Si el mejor es el autor, buscar siguiente mejor
+    if best_user and best_user.lower() == author:
+        print(f"⚠️ {best_user} es el autor de la PR. Buscando siguiente mejor revisor...")
+        second_best_user = None
+        second_best_score = -1
+
+        for user, context in user_contexts.items():
+            if user.lower() == author:
+                continue
+            score = similarity(pr_vector, context)
+            if score > second_best_score:
+                second_best_score = score
+                second_best_user = user
+
+        best_user = second_best_user
+        best_score = second_best_score
+
+    if best_user:
+        try:
+            pr.create_review_request([best_user])
+            print(f"✅ Asignado revisor automático: {best_user} con afinidad {best_score}")
+        except Exception as e:
+            print(f"⚠️ Error al asignar a {best_user}: {e}")
+    else:
+        print("❌ No se encontró ningún revisor válido.")
