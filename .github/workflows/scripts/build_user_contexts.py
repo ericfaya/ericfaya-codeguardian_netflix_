@@ -53,6 +53,7 @@ plt.title("Mapa de conocimiento técnico por usuario")
 plt.xlabel("Contexto")
 plt.ylabel("Usuario")
 plt.tight_layout()
-plt.show()
+plt.savefig("knowledge_heatmap.png") #Guardar en lugar de mostrarlo
+#plt.show()
 
 print("✅ user_contexts.json y author_map.json generados correctamente.")
