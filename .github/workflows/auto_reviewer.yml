@@ -20,7 +20,7 @@ jobs:
           python-version: 3.11
 
       - name: Install dependencies
-        run: pip install PyGithub GitPython
+        run: pip install PyGithub GitPython seaborn matplotlib
 
       - name: Construir contexto 
         run: python .github/workflows/scripts/build_user_contexts.py
