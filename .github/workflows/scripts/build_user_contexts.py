@@ -8,14 +8,7 @@ repo = Repo(".")
 user_contexts = defaultdict(lambda: defaultdict(int))
 author_map = {}
 
-# Detectar rama por defecto si no sabes si es 'main' o 'master'
-try:
-    default_branch = repo.active_branch.name
-except:
-    default_branch = repo.git.symbolic_ref('refs/remotes/origin/HEAD').split("/")[-1]
-
-# Iterar commits
-for commit in repo.iter_commits(default_branch, max_count=1000):
+for commit in repo.iter_commits("HEAD", max_count=1000):
     author_name = commit.author.name
     author_email = commit.author.email
 
