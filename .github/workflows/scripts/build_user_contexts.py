@@ -3,9 +3,11 @@ from collections import defaultdict
 import json
 import os
 
+#Objetivo: generar un vector similar al de los usuarios, pero basado en los ficheros tocados en la PR
+
 # Inicializar repo
 repo = Repo(".")
-user_contexts = defaultdict(lambda: defaultdict(int))
+user_contexts = defaultdict(lambda: defaultdict(int)) #Vector de contexto por usuario
 author_map = {}
 
 #Parser del repo que identifica clases tocadas por cada commit(por autor)
@@ -28,13 +30,14 @@ for commit in repo.iter_commits("HEAD", max_count=1000):
         ext = filename.split(".")[-1]
 
         #Guardar vectores de contexto por usuario
+        #Se parsea por cada usuario, que clases ha tocado, que paquetes ha tocado(por el path del archivo) y que tipo de archivo es
         user_contexts[github_login][f"file:{filename}"] += 1
         user_contexts[github_login][f"package:{package}"] += 1
         user_contexts[github_login][f"type:{ext}"] += 1
 
 # Guardar vectores contextuales
 with open("user_contexts.json", "w") as f:
-    json.dump({u: dict(v) for u, v in user_contexts.items()}, f, indent=2)
+    json.dump({u: dict(v) for u, v in user_contexts.items()}, f, indent=2) #Convert to final matrix
 
 # Guardar mapeo de autores
 with open("author_map.json", "w") as f:
