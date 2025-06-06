@@ -1,7 +1,10 @@
-from git import Repo
+from git import Repo #Con GitPython se construye directament del historial de Git sin hardcodear nada
 from collections import defaultdict
 import json
 import os
+import pandas as pd
+import seaborn as sns
+import matploit.pyplot as plt
 
 #Objetivo: generar un vector similar al de los usuarios, pero basado en los ficheros tocados en la PR
 
@@ -42,5 +45,14 @@ with open("user_contexts.json", "w") as f:
 # Guardar mapeo de autores
 with open("author_map.json", "w") as f:
     json.dump(author_map, f, indent=2)
+    
+df = pd.DataFrame.from_dict(user_contexts, orient="index").fillna(0)
+plt.figure(figsize=(10, 6))
+sns.heatmap(df, annot=True, cmap="YlGnBu")
+plt.title("Mapa de conocimiento técnico por usuario")
+plt.xlabel("Contexto")
+plt.ylabel("Usuario")
+plt.tight_layout()
+plt.show()
 
 print("✅ user_contexts.json y author_map.json generados correctamente.")
