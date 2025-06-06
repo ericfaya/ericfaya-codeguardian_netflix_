@@ -13,6 +13,7 @@ repo_name = os.environ["GITHUB_REPOSITORY"]
 gh = Github(token)
 repo = gh.get_repo(repo_name)
 
+#Se genera un vector similar al de los usuarios, pero basado en los archivos tocados en la PR
 def vector_from_files(file_paths):
     vector = defaultdict(int)
     for file in file_paths:
