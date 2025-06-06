@@ -8,6 +8,7 @@ repo = Repo(".")
 user_contexts = defaultdict(lambda: defaultdict(int))
 author_map = {}
 
+#Parser del repo que identifica clases tocadas por cada commit(por autor)
 for commit in repo.iter_commits("HEAD", max_count=1000):
     author_name = commit.author.name
     author_email = commit.author.email
@@ -26,6 +27,7 @@ for commit in repo.iter_commits("HEAD", max_count=1000):
         filename = parts[-1]
         ext = filename.split(".")[-1]
 
+        #Guardar vectores de contexto por usuario
         user_contexts[github_login][f"file:{filename}"] += 1
         user_contexts[github_login][f"package:{package}"] += 1
         user_contexts[github_login][f"type:{ext}"] += 1
