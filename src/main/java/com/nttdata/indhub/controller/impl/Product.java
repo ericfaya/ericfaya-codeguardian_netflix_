@@ -19,6 +19,7 @@ public class Product {
         this.brand = brand;
     }
 
+
     public static String getModel() {
         return model;
     }
