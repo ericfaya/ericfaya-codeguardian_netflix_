@@ -3,23 +3,46 @@ from collections import defaultdict
 import json
 import os
 
+# Inicializar repo
 repo = Repo(".")
 user_contexts = defaultdict(lambda: defaultdict(int))
+author_map = {}
 
-for commit in repo.iter_commits("HEAD", max_count=1000):
-    author = commit.author.name
-    for file in commit.stats.files:
-        parts = file.split("/")
+# Detectar rama por defecto si no sabes si es 'main' o 'master'
+try:
+    default_branch = repo.active_branch.name
+except:
+    default_branch = repo.git.symbolic_ref('refs/remotes/origin/HEAD').split("/")[-1]
+
+# Iterar commits
+for commit in repo.iter_commits(default_branch, max_count=1000):
+    author_name = commit.author.name
+    author_email = commit.author.email
+
+    # Inferir el GitHub login si está disponible en los datos (opcional)
+    github_login = author_name.lower().replace(" ", "")  # Personaliza si quieres más precisión
+
+    author_map[author_name] = github_login
+
+    for file_path in commit.stats.files:
+        parts = file_path.split("/")
         if len(parts) < 2:
             continue
+
         package = ".".join(parts[:-1])
         filename = parts[-1]
         ext = filename.split(".")[-1]
 
-        user_contexts[author][f"file:{filename}"] += 1
-        user_contexts[author][f"package:{package}"] += 1
-        user_contexts[author][f"type:{ext}"] += 1
+        user_contexts[github_login][f"file:{filename}"] += 1
+        user_contexts[github_login][f"package:{package}"] += 1
+        user_contexts[github_login][f"type:{ext}"] += 1
 
-# Guardar los vectores contextuales
+# Guardar vectores contextuales
 with open("user_contexts.json", "w") as f:
     json.dump({u: dict(v) for u, v in user_contexts.items()}, f, indent=2)
+
+# Guardar mapeo de autores
+with open("author_map.json", "w") as f:
+    json.dump(author_map, f, indent=2)
+
+print("✅ user_contexts.json y author_map.json generados correctamente.")
