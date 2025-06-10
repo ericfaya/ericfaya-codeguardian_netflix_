@@ -47,13 +47,22 @@ with open("author_map.json", "w") as f:
     json.dump(author_map, f, indent=2)
     
 df = pd.DataFrame.from_dict(user_contexts, orient="index").fillna(0)
-plt.figure(figsize=(10, 6))
-sns.heatmap(df, annot=True, cmap="YlGnBu")
-plt.title("Mapa de conocimiento técnico por usuario")
-plt.xlabel("Contexto")
-plt.ylabel("Usuario")
+
+top_contexts = df.sum(axis=0).sort_values(ascending=False).head(30).index
+df_filtered = df[top_contexts]
+
+plt.figure(figsize=(max(10, len(top_contexts) * 0.5), 8))  # auto-ajuste tamaño
+
+sns.heatmap(df_filtered, annot=True, fmt=".0f", cmap="YlGnBu", cbar=True)
+
+plt.title("Mapa de conocimiento técnico por usuario", fontsize=14)
+plt.xlabel("Contexto", fontsize=12)
+plt.ylabel("Usuario", fontsize=12)
+
+plt.xticks(rotation=45, ha="right")
+plt.yticks(rotation=0)
+
 plt.tight_layout()
-plt.savefig("knowledge_heatmap.png") #Guardar en lugar de mostrarlo
-#plt.show()
+plt.savefig("knowledge_heatmap.png", dpi=300)
 
 print("✅ user_contexts.json y author_map.json generados correctamente.")
