@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 
 # Inicializar repo
 repo = Repo(".")
-user_contexts = defaultdict(lambda: defaultdict(int)) #Vector de contexto por usuario
-author_map = {}
+user_contexts = defaultdict(lambda: defaultdict(int)) #Vector de contexto por usuario con su experiencia tecnica
+author_map = {} #Mapeo de nombre real(github login)
 
 #Parser del repo que identifica clases tocadas por cada commit(por autor)
-for commit in repo.iter_commits("HEAD", max_count=1000):
+for commit in repo.iter_commits("HEAD", max_count=1000): #Lee hasta 1000 comits
     author_name = commit.author.name
     author_email = commit.author.email
 
@@ -23,7 +23,7 @@ for commit in repo.iter_commits("HEAD", max_count=1000):
 
     author_map[author_name] = github_login
 
-    for file_path in commit.stats.files:
+    for file_path in commit.stats.files: #Por cada archivo modificado extrae,nombre de archivo,ruta(paquete), extensión(tipo)
         parts = file_path.split("/")
         if len(parts) < 2:
             continue
@@ -63,6 +63,6 @@ plt.xticks(rotation=45, ha="right")
 plt.yticks(rotation=0)
 
 plt.tight_layout()
-plt.savefig("knowledge_heatmap.png", dpi=300)
+plt.savefig("knowledge_heatmap.png", dpi=300) #Heatmap con seaborn del conocimiento por usuario
 
 print("✅ user_contexts.json y author_map.json generados correctamente.")
