@@ -37,7 +37,7 @@ def similarity(vec1, vec2):
 
 # Evaluar PRs abiertas
 for pr in repo.get_pulls(state="open"):
-    if pr.commits < 5 or pr.requested_reviewers:
+    if pr.commits < 5 # or pr.requested_reviewers:
         continue
 
     print(f"Evaluando PR #{pr.number} con {pr.commits} commits...")
