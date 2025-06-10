@@ -77,7 +77,7 @@ for pr in repo.get_pulls(state="open"):
 
     if best_user:
         try:
-            pr.create_review_request([best_user])
+            pr.add_to_reviewers([best_user])
             print(f"✅ Asignado revisor automático: {best_user} con afinidad {best_score}")
         except Exception as e:
             print(f"⚠️ Error al asignar a {best_user}: {e}")
