@@ -19,6 +19,7 @@ public class Product {
     }
 
 
+
     public static String getModel() {
         return model;
     }
