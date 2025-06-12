@@ -42,6 +42,7 @@ def similarity(vec1, vec2):
     return score
 
 # Evaluar PRs abiertas
+pr_contexts = {}
 for pr in repo.get_pulls(state="open"):
     if pr.commits < 5: # or pr.requested_reviewers:
         continue
@@ -94,27 +95,27 @@ for pr in repo.get_pulls(state="open"):
     else:
         print("❌ No se encontró ningún revisor válido.")
 
-    # Cargar contexto de PRs
-    with open("pr_contexts.json") as f:
-        pr_contexts = json.load(f)
-    
-    # Convertir a DataFrame
-    df = pd.DataFrame.from_dict(pr_contexts, orient="index").fillna(0)
-    
-    # (Opcional) Mostrar solo los contextos más relevantes
-    top_contexts = df.sum(axis=0).sort_values(ascending=False).head(30).index
-    df_filtered = df[top_contexts]
-    
-    # Dibujar heatmap
-    plt.figure(figsize=(max(10, len(top_contexts) * 0.5), 8))
-    sns.heatmap(df_filtered, annot=True, fmt=".0f", cmap="YlGnBu", cbar=True)
-    
-    plt.title("Vector de contexto por PR", fontsize=14)
-    plt.xlabel("Contexto", fontsize=12)
-    plt.ylabel("Pull Request", fontsize=12)
-    
-    plt.xticks(rotation=45, ha="right")
-    plt.yticks(rotation=0)
-    
-    plt.tight_layout()
-    plt.savefig("pr_heatmap.png", dpi=300)
+# Cargar contexto de PRs
+with open("pr_contexts.json") as f:
+    pr_contexts = json.load(f)
+
+# Convertir a DataFrame
+df = pd.DataFrame.from_dict(pr_contexts, orient="index").fillna(0)
+
+# (Opcional) Mostrar solo los contextos más relevantes
+top_contexts = df.sum(axis=0).sort_values(ascending=False).head(30).index
+df_filtered = df[top_contexts]
+
+# Dibujar heatmap
+plt.figure(figsize=(max(10, len(top_contexts) * 0.5), 8))
+sns.heatmap(df_filtered, annot=True, fmt=".0f", cmap="YlGnBu", cbar=True)
+
+plt.title("Vector de contexto por PR", fontsize=14)
+plt.xlabel("Contexto", fontsize=12)
+plt.ylabel("Pull Request", fontsize=12)
+
+plt.xticks(rotation=45, ha="right")
+plt.yticks(rotation=0)
+
+plt.tight_layout()
+plt.savefig("pr_heatmap.png", dpi=300)
