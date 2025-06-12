@@ -48,6 +48,12 @@ jobs:
           name: knowledge-heatmap
           path: knowledge_heatmap.png
 
+      - name: Upload PR context JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-context
+          path: pr_contexts.json
+
       - name: Upload PR heatmap
         uses: actions/upload-artifact@v4
         with:
