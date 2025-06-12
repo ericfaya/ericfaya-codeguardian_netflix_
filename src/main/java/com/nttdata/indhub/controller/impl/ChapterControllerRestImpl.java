@@ -55,7 +55,6 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
     }
 
 
-
     @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,6 +64,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
+
     public NetflixResponse<PostChapterRest> getChapterById(final Long id) throws NetflixException {
         final PostChapterRest postChapterRest = service.getChapterById(id);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
