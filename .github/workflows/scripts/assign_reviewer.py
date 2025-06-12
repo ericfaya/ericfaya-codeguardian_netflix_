@@ -32,7 +32,9 @@ def similarity(vec1, vec2):
     common_keys = set(vec1.keys()) & set(vec2.keys())
     if not common_keys:
         return 0
-    score = sum(min(vec1[k], vec2[k]) for k in common_keys)
+        #PROBLEMA:si los usuarios tienen presencia en los mismos contextos clave, pero en diferente magnitud, el score apenas cambia
+    score = sum(min(vec1[k], vec2[k]) for k in common_keys) #EJ min(22,1) + min (461,21) + .... = score
+    #Si el PR tiene type:java = 1 y el user tiene type:java = 500, entonces min(1,500)=1 solo cuenta como 1 punto de afinidad
     return score
 
 # Evaluar PRs abiertas
