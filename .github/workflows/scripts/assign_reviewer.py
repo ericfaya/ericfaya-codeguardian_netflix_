@@ -1,5 +1,9 @@
 import os
 import json
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 from github import Github
 from collections import defaultdict
 
@@ -48,7 +52,11 @@ for pr in repo.get_pulls(state="open"):
 
     files = pr.get_files()
     pr_vector = vector_from_files(files)
-
+    pr_contexts[f"PR#{pr.number}"] = pr_vector
+    
+    with open("pr_contexts.json", "w") as f:
+        json.dump(pr_contexts, f, indent=2)
+    
     best_user = None
     best_score = -1
 
@@ -85,3 +93,28 @@ for pr in repo.get_pulls(state="open"):
             print(f"⚠️ Error al asignar a {best_user}: {e}")
     else:
         print("❌ No se encontró ningún revisor válido.")
+
+    # Cargar contexto de PRs
+    with open("pr_contexts.json") as f:
+        pr_contexts = json.load(f)
+    
+    # Convertir a DataFrame
+    df = pd.DataFrame.from_dict(pr_contexts, orient="index").fillna(0)
+    
+    # (Opcional) Mostrar solo los contextos más relevantes
+    top_contexts = df.sum(axis=0).sort_values(ascending=False).head(30).index
+    df_filtered = df[top_contexts]
+    
+    # Dibujar heatmap
+    plt.figure(figsize=(max(10, len(top_contexts) * 0.5), 8))
+    sns.heatmap(df_filtered, annot=True, fmt=".0f", cmap="YlGnBu", cbar=True)
+    
+    plt.title("Vector de contexto por PR", fontsize=14)
+    plt.xlabel("Contexto", fontsize=12)
+    plt.ylabel("Pull Request", fontsize=12)
+    
+    plt.xticks(rotation=45, ha="right")
+    plt.yticks(rotation=0)
+    
+    plt.tight_layout()
+    plt.savefig("pr_heatmap.png", dpi=300)
