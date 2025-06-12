@@ -54,6 +54,8 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
                                 postChapterRestList.getTotalPages())));
     }
 
+
+
     @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
