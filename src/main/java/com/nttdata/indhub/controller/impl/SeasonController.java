@@ -25,7 +25,7 @@ import com.nttdata.indhub.util.constant.RestConstantsUtils;
 @RestController
 @Tag(name = "Season", description = "Season Controller")
 @RequiredArgsConstructor
-public class SeasonControllerRestImpl implements com.nttdata.indhub.controller.SeasonController {
+public class SeasonController implements com.nttdata.indhub.controller.SeasonController {
 
     private final SeasonService seasonService;
 

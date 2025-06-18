@@ -64,6 +64,24 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 CommonConstantsUtils.OK);
     }
 
+
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "updateActor", description = "Update an existing Actor")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    public NetflixResponse<PostActorRest> updateActor(@RequestBody final PostActorRest actor) throws NetflixException {
+        final PostActorRest actorRest = actorService.updateActor(actor, actor.getId());
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, actorRest);
+    }
+
     @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -101,22 +119,6 @@ public class ActorControllerRestImpl implements ActorControllerRest {
     public NetflixResponse<PostActorRest> createActor(
             @RequestBody final PostActorRest actor) throws NetflixException {
         final PostActorRest actorRest = actorService.createActor(actor);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, actorRest);
-    }
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping(value = RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "updateActor", description = "Update an existing Actor")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<PostActorRest> updateActor(@RequestBody final PostActorRest actor) throws NetflixException {
-        final PostActorRest actorRest = actorService.updateActor(actor, actor.getId());
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK, actorRest);
