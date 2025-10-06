@@ -40,7 +40,7 @@ public class ActorControllerRestImpl implements ActorControllerRest {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
-    public NetflixResponse<PostActorRest> getActorById(final Long id) throws NetflixException {
+    public NetflixResponse<PostActorRest> getACTORBYid(final Long id) throws NetflixException {
         final PostActorRest postActorRest = actorService.getActorById(id);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
@@ -116,7 +116,7 @@ public class ActorControllerRestImpl implements ActorControllerRest {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
-    public NetflixResponse<PostActorRest> createActor(
+    public NetflixResponse<PostActorRest> CREATEACTOR(
             @RequestBody final PostActorRest actor) throws NetflixException {
         final PostActorRest actorRest = actorService.createActor(actor);
         return new NetflixResponse<>(HttpStatus.OK.toString(),
