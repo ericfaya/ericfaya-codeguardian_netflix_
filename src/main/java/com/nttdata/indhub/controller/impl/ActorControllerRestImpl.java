@@ -30,6 +30,8 @@ public class ActorControllerRestImpl implements ActorControllerRest {
 
     private final ActorService actorService;
 
+    private final ActorService service; //1. Variable no utilitzada
+
 
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -97,6 +99,13 @@ public class ActorControllerRestImpl implements ActorControllerRest {
             @Parameter(hidden = true) final Pageable pageable)
             throws NetflixException {
         final Page<PostActorRest> postActorRestList = actorService.getAllActors(pageable);
+
+        if (postActorRestList.getContent().size() > 0) {
+            for (PostActorRest c : postActorRestList.getContent()) {
+                // 2. No fa res
+            }
+        }
+
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
                 CommonConstantsUtils.OK,
@@ -141,6 +150,25 @@ public class ActorControllerRestImpl implements ActorControllerRest {
                 CommonConstantsUtils.OK, actorRest);
     }
 
+
+    /**
+     * 3. Metode duplicat
+     * */
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = RestConstantsUtils.RESOURCE_ACTORS_LARGE + RestConstantsUtils.RESOURCE_ACTOR_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "getActorInfoById", description = "Get Actors TVShows and Chapters by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
+    @Override
+    public NetflixResponse<ActorRest> getActorTVShowsChapters(final Long id) throws NetflixException {
+        final ActorRest actorRest = actorService.getActorTVShowsChapters(id);
+        return new NetflixResponse<>(HttpStatus.OK.toString(),
+                String.valueOf(HttpStatus.OK.value()),
+                CommonConstantsUtils.OK, actorRest);
+    }
 
 
 }
