@@ -48,6 +48,8 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
                             schema = @Schema(implementation = PostChapterRest.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+
     })
     public NetflixResponse<D4iPageRest<PostChapterRest>> getAllChapters(
             @RequestParam(defaultValue = CommonConstantsUtils.ZERO) final int page,
