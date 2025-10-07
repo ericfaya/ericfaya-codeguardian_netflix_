@@ -1,11 +1,9 @@
 name: process-pull-request
+
 on:
-  push:
-    branches:
-      - '**'  # cualquier rama
   pull_request:
     types: [opened, synchronize, reopened]
-
+    
 permissions:
   contents: read
   pull-requests: write
