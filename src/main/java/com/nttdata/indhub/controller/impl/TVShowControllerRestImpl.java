@@ -32,9 +32,6 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
 
   private final TVShowService service;
 
-  private final TVShowService showService; //1. Variable no utilitzada
-
-
   @Override
   @ResponseStatus(HttpStatus.OK)
   @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,12 +47,6 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
           @Parameter(hidden = true) final Pageable pageable)
           throws NetflixException {
     final Page<PostTVShowRest> postTVShowRestList = service.getAllTVShows(pageable);
-
-      if (postTVShowRestList.getContent().size() > 0) {
-          for (PostTVShowRest c : postTVShowRestList.getContent()) {
-              // 2. No fa res
-          }
-      }
     return new NetflixResponse<>(HttpStatus.OK.toString(),
             String.valueOf(HttpStatus.OK.value()),
             CommonConstantsUtils.OK,
@@ -234,25 +225,18 @@ public class TVShowControllerRestImpl implements TVShowControllerRest {
         CommonConstantsUtils.OK, tvShowRest);
   }
 
-
-
-
-    /**
-     * 3. Metode duplicat
-     * */
-
-    @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "searchTVShowsByName", description = "Search TV shows by name")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-    public NetflixResponse<List<PostTVShowRest>> searchTVShowsByName(@RequestParam final String name) throws NetflixException {
-        final List<PostTVShowRest> result = service.searchTVShowsByName(name);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK, result);
-    }
+  @GetMapping(value = RestConstantsUtils.RESOURCE_TVSHOWS + "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "searchTVShowsByName", description = "Search TV shows by name")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200"),
+          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+          @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+  })
+  public NetflixResponse<List<PostTVShowRest>> searchTVShowsByName(@RequestParam final String name) throws NetflixException {
+    final List<PostTVShowRest> result = service.searchTVShowsByName(name);
+    return new NetflixResponse<>(HttpStatus.OK.toString(),
+            String.valueOf(HttpStatus.OK.value()),
+            CommonConstantsUtils.OK, result);
+  }
 
 }
