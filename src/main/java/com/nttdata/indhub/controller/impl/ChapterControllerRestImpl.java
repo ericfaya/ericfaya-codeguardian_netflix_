@@ -57,7 +57,6 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @Parameter(hidden = true) final Pageable pageable)
             throws NetflixException {
 
-        s
         final Page<PostChapterRest> postChapterRestList = service.getAllChapters(pageable);
         return buildResponse(new D4iPageRest<>(postChapterRestList.getContent().toArray(PostChapterRest[]::new),
                 new D4iPaginationInfo(postChapterRestList.getNumber(),

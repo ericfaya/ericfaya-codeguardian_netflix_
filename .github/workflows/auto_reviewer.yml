@@ -1,0 +1,61 @@
+name: Auto-asignar revisor si hay 5 commits
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  assign-reviewer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: pip install PyGithub GitPython seaborn matplotlib
+
+      - name: Construir contexto 
+        run: python .github/workflows/scripts/build_user_contexts.py
+
+      - name: Run reviewer assignment script
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        run: python .github/workflows/scripts/assign_reviewer.py
+
+      - name: Upload user context JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-context
+          path: user_contexts.json
+
+      - name: Upload author map JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: author-map
+          path: author_map.json
+
+      - name: Upload heatmap
+        uses: actions/upload-artifact@v4
+        with:
+          name: knowledge-heatmap
+          path: knowledge_heatmap.png
+
+      - name: Upload PR context JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-context
+          path: pr_contexts.json
+
+      - name: Upload PR heatmap
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-heatmap
+          path: pr_heatmap.png

@@ -1,0 +1,169 @@
+name: process-pull-request
+on:
+  push:
+    branches:
+      - '**'  # cualquier rama
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  process-pull-request:
+    runs-on: ubuntu-latest
+
+    env:
+      GROQAPIKEY: ${{ secrets.GROQAPIKEY }}
+      GROQMODEL: ${{ secrets.GROQMODEL }}
+      GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+      GROQAPIKEYSUMMARY: ${{ secrets.GROQAPIKEYSUMMARY }}
+
+    steps:
+      - name: Checkout code with full history
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get PR SHAs
+        run: |
+          echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          echo "PR_SHA_BASE=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+
+      - name: Detect files changed en el último push (diff dentro de la PR)
+        run: |
+          COMMITS=($(git rev-list --no-merges --reverse origin/${{ github.event.pull_request.base.ref }}..HEAD))
+      
+          if [ "${#COMMITS[@]}" -lt 2 ]; then
+            echo "Solo hay un commit en la PR, usando base y head SHA para comparación"
+            PREV_COMMIT=${{ github.event.pull_request.base.sha }}
+            LAST_COMMIT=${{ github.event.pull_request.head.sha }}
+          else
+            PREV_COMMIT=${COMMITS[-2]}
+            LAST_COMMIT=${COMMITS[-1]}
+          fi
+      
+          echo "🔁 Comparando: $PREV_COMMIT .. $LAST_COMMIT"
+      
+          echo "🧠 Archivos modificados entre los dos últimos commits (con estado):"
+          git diff --find-renames --name-status $PREV_COMMIT $LAST_COMMIT
+      
+          echo "📁 Guardando solo rutas de archivo en changed_files.txt:"
+          git diff --find-renames --name-only $PREV_COMMIT $LAST_COMMIT > changed_files.txt
+          cat changed_files.txt
+
+          echo "📄 Guardando nombre y tipo de cambio en changed_files_full.txt:"
+          git diff --find-renames --name-status $PREV_COMMIT $LAST_COMMIT > changed_files_full.txt
+          cat changed_files_full.txt
+      
+          echo "PREV_COMMIT=$PREV_COMMIT" >> $GITHUB_ENV
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
+                
+      - name: Get Pull Request Info
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+
+      - name: Run CodeGuardian JAR
+        run: |
+          java -jar codeguardian-0.0.1-SNAPSHOT.jar  \
+            ${{ env.GROQAPIKEY }} \
+            ${{ env.GROQMODEL }} \
+            ${{ env.GITHUB_TOKEN }} \
+            ${{ env.REPO_OWNER }} \
+            ericfaya-codeguardian_netflix_ \
+            ${{ env.PR_NUMBER }} \
+            changed_files.txt \
+            changed_files_full.txt
+
+      - name: Generar resumen técnico con Groq y comentar en la PR + Teams
+        run: |
+          # ➤ Preparar inputs del prompt
+          COMMITS=$(git log origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --pretty=format:"- %s" | head -n 50)
+          FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} | head -n 20)
+          DIFFS=$(git diff origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} --unified=0 | grep '^+[^+]' 2>/dev/null | head -n 50)
+      
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          COMMIT_MSG=$(git log --no-merges -1 --pretty=%s)
+          COMMIT_SHA=$(git log --no-merges -1 --pretty=%h)
+      
+          # ➤ Crear prompt técnico
+          PROMPT="Eres un revisor técnico que resume Pull Requests para incluir un resumen breve, claro y profesional.
+      
+          Resume esta Pull Request con base en la siguiente información:
+          
+          📝 Commits recientes:
+          $COMMITS
+          
+          📂 Archivos modificados:
+          $FILES
+          
+          🔍 Fragmentos de código añadido:
+          $DIFFS
+      
+          Escribe un resumen técnico en una sola frase que abarque los principales cambios. Evita frases genéricas y no incluyas explicaciones del estilo 'Este resumen puede ser usado...'."
+      
+          # ➤ Crear cuerpo JSON para Groq
+          jq -n \
+            --arg prompt "$PROMPT" \
+            '{
+              model: "llama3-70b-8192",
+              messages: [{ role: "user", content: $prompt }],
+              temperature: 0.3
+            }' > summary_body.json
+      
+          # ➤ Llamada a Groq
+          curl -s https://api.groq.com/openai/v1/chat/completions \
+            -H "Authorization: Bearer $GROQAPIKEYSUMMARY" \
+            -H "Content-Type: application/json" \
+            -d @summary_body.json > groq_summary_output.json
+      
+          SUMMARY=$(jq -r '.choices[0].message.content' groq_summary_output.json)
+      
+          if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
+            SUMMARY="(No se pudo generar el resumen)"
+          fi
+      
+          # ➤ Comentario en la PR
+          # COMMENT="📝 *Resumen técnico generado por CodeGuardian*\n\n$SUMMARY"
+          # gh pr comment $PR_NUMBER --body "$COMMENT"
+      
+          # ➤ Notificación en Teams usando MessageCard para soportar saltos de línea
+          ESCAPED_SUMMARY=$(echo "$SUMMARY" | jq -Rs .)
+          
+          cat <<EOF > teams_payload.json
+          {
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "summary": "Resumen de la PR",
+            "themeColor": "0076D7",
+            "title": "🛡️ CodeGuardian ha analizado la PR #${PR_NUMBER}",
+            "sections": [{
+              "activityTitle": "*${PR_TITLE}*",
+              "activitySubtitle": "Autor: ${PR_AUTHOR}",
+              "facts": [
+                { "name": "Commit", "value": "${COMMIT_SHA} - ${COMMIT_MSG}" },
+                { "name": "Pull Request", "value": "[Ver en GitHub](${PR_URL})" }
+              ],
+              "text": $ESCAPED_SUMMARY
+            }]
+          }
+          EOF
+
+          curl -H "Content-Type: application/json" \
+               -d @teams_payload.json \
+               "${{ secrets.TEAMS_WEBHOOK_URL }}"
+
