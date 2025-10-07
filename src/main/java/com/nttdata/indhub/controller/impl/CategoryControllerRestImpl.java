@@ -29,10 +29,7 @@ public class CategoryControllerRestImpl implements CategoryControllerRest {
 
   private final CategoryService categoryService;
 
-  private final CategoryService service;  //1. Variable no utilitzada
-
-
-    @Override
+  @Override
   @ResponseStatus(HttpStatus.OK)
   @GetMapping(value = RestConstantsUtils.RESOURCE_CATEGORIES, produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "getAllCategories", description = "Get all Categories paginated")
@@ -47,13 +44,6 @@ public class CategoryControllerRestImpl implements CategoryControllerRest {
       @Parameter(hidden = true) final Pageable pageable)
       throws NetflixException {
     final Page<CategoryRest> postCategoryRestList = categoryService.getAllCategories(pageable);
-
-        if (postCategoryRestList.getContent().size() > 0) {
-            for (CategoryRest c : postCategoryRestList.getContent()) {
-                // 2. No fa res
-            }
-        }
-
     return new NetflixResponse<>(HttpStatus.OK.toString(),
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK,
@@ -129,27 +119,4 @@ public class CategoryControllerRestImpl implements CategoryControllerRest {
         String.valueOf(HttpStatus.OK.value()),
         CommonConstantsUtils.OK);
   }
-
-
-    /**
-     * 3. Metode duplicat
-     * */
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping(value = RestConstantsUtils.RESOURCE_CATEGORIES + RestConstantsUtils.RESOURCE_CATEGORY_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "deleteCategory", description = "Delete an existing Category")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-    })
-
-    public NetflixResponse<Object> deleteCategory(@RequestParam final Long id) throws NetflixException {
-        categoryService.deleteCategory(id);
-        return new NetflixResponse<>(HttpStatus.OK.toString(),
-                String.valueOf(HttpStatus.OK.value()),
-                CommonConstantsUtils.OK);
-    }
-
 }
