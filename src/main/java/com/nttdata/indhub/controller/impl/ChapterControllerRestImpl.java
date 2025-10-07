@@ -31,8 +31,6 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
 
     private final ChapterService service;
 
-    private final ChapterService serviceChapter; //1. Variable no utilitzada
-
     private <T> NetflixResponse<T> buildResponse(T body) {
         return new NetflixResponse<>(HttpStatus.OK.toString(),
                 String.valueOf(HttpStatus.OK.value()),
@@ -50,6 +48,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
                             schema = @Schema(implementation = PostChapterRest.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
 
     })
     public NetflixResponse<D4iPageRest<PostChapterRest>> getAllChapters(
@@ -58,17 +57,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @Parameter(hidden = true) final Pageable pageable)
             throws NetflixException {
 
-
         final Page<PostChapterRest> postChapterRestList = service.getAllChapters(pageable);
-
-
-        if (postChapterRestList.getContent().size() > 0) {
-            for (PostChapterRest c : postChapterRestList.getContent()) {
-                // 2. No fa res
-            }
-        }
-
-
         return buildResponse(new D4iPageRest<>(postChapterRestList.getContent().toArray(PostChapterRest[]::new),
                 new D4iPaginationInfo(postChapterRestList.getNumber(),
                         pageable.getPageSize(),
@@ -136,21 +125,4 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
         final ChapterRest chapterRest = service.deleteActorOfChapter(actorId, chapterId);
         return buildResponse(chapterRest);
     }
-
-
-    /**
-     * 3. Metode duplicat
-     * */
-
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping(value = RestConstantsUtils.RESOURCE_CHAPTERS + RestConstantsUtils.RESOURCE_CHAPTER_ID
-            + RestConstantsUtils.RESOURCE_ACTORS + RestConstantsUtils.RESOURCE_ACTOR_ID + RestConstantsUtils.DELETE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Detach actor", description = "Removes an actor from a chapter")
-    public NetflixResponse<ChapterRest> deleteActorOfChapter(@RequestParam final Long actorId, @RequestParam final Long chapterId) throws NetflixException {
-        final ChapterRest chapterRest = service.deleteActorOfChapter(actorId, chapterId);
-        return buildResponse(chapterRest);
-    }
-
 }
