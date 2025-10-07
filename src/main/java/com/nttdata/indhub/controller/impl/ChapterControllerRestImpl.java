@@ -48,7 +48,6 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
                             schema = @Schema(implementation = PostChapterRest.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
 
     })
     public NetflixResponse<D4iPageRest<PostChapterRest>> getAllChapters(
@@ -56,6 +55,7 @@ public class ChapterControllerRestImpl implements ChapterControllerRest {
             @RequestParam(defaultValue = CommonConstantsUtils.TWENTY) final int size,
             @Parameter(hidden = true) final Pageable pageable)
             throws NetflixException {
+
 
         final Page<PostChapterRest> postChapterRestList = service.getAllChapters(pageable);
         return buildResponse(new D4iPageRest<>(postChapterRestList.getContent().toArray(PostChapterRest[]::new),
