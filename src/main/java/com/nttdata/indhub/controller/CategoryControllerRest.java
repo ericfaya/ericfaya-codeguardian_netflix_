@@ -8,6 +8,7 @@ import com.nttdata.indhub.exception.NetflixException;
 
 public interface CategoryControllerRest {
 
+
   NetflixResponse<D4iPageRest<CategoryRest>> getAllCategories(int page, int size, Pageable pageable) throws NetflixException;
 
   NetflixResponse<CategoryRest> getCategoryById(Long id) throws NetflixException;

@@ -11,9 +11,9 @@ public interface ActorControllerRest {
 
     NetflixResponse<D4iPageRest<PostActorRest>> getAllActors(int page, int size, Pageable pageable) throws NetflixException;
 
-    NetflixResponse<PostActorRest> getactorBYId(Long id) throws NetflixException;
+    NetflixResponse<PostActorRest> getActorById(Long id) throws NetflixException;
 
-    NetflixResponse<PostActorRest> CREATEACTOR(PostActorRest actor) throws NetflixException;
+    NetflixResponse<PostActorRest> createActor(PostActorRest actor) throws NetflixException;
 
     NetflixResponse<PostActorRest> updateActor(PostActorRest actor) throws NetflixException;
 

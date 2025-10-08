@@ -36,4 +36,8 @@ public class ActorEntity implements Serializable {
 
     @Transient
     private List<TVShowEntity> tvShows;
+
+    public void setActive(boolean b) {
+
+    }
 }

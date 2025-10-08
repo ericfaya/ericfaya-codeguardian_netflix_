@@ -3,7 +3,7 @@ name: process-pull-request
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-
+    
 permissions:
   contents: read
   pull-requests: write

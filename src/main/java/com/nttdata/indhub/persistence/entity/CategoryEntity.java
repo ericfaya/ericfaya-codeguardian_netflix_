@@ -30,5 +30,9 @@ public class CategoryEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     @ManyToMany(mappedBy = "categories")
     private List<TVShowEntity> tvShows;
+
+    public void setDeleted(boolean b) {
+
+    }
 }
 
